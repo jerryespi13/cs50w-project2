@@ -27,4 +27,5 @@ Web Programming with Python and JavaScript
 > `pip install -r .\requirements.txt`
 ## Variables de entorno:
 ### Asigna el valor a la variable de entorno FLASK_APP 
->`$env:FLASK_APP = "application.py"`
+Crea un archivo .env y dentro de el asigna:
+>`FLASK_APP="application.py"`
