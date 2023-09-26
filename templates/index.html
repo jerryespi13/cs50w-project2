@@ -5,15 +5,27 @@ Registrate
 
 {%block body%}
 <main class="containerInicio">
-    <div class="txtInicio">
-        <h1>Primero, escribe tu usuario</h1>
-        <p>Te sugerimos que uses un usario creativo</p>
-    </div>
-    <form class="formularioUsuario" action="#" method="post">
-      <label for="usuario"></label>
-      <input type="text" class="form-control" name="usuario" id="usuario" aria-describedby="emailHelpId" placeholder="Ingresa tu usuario">
-      <span>@</span>
-      <button>Continuar</button>
-    </form>
+  <div class="txtInicio">
+    <h1>Primero, escribe tu usuario</h1>
+    <p>Te sugerimos que uses un usario creativo</p>
+  </div>
+  <form class="formularioUsuario" action="/" method="post">
+    
+    <label for="usuario"></label>
+    <input type="text" class="form-control" name="usuario" id="usuario"
+      aria-describedby="emailHelpId" placeholder="Ingresa tu usuario" autofocus autocomplete="off">
+    <span>@</span>
+    <button>Continuar</button>
+    {% with messages = get_flashed_messages() %}
+      {% if messages %}
+        <div class="alert">
+            {% for message in messages %}
+              {{ message }}
+            {% endfor %}
+          <div class="closebtn" onclick="this.parentElement.style.display='none';">&times;</div> 
+        </div>
+        {% endif %}
+        {% endwith %}
+  </form>
 </main>
 {%endblock%}
