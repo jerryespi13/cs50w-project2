@@ -1,6 +1,5 @@
 import os
-
-from flask import Flask
+from flask import Flask, render_template
 from flask_socketio import SocketIO, emit
 
 # para trabajar con variables de entorno desde el archivo .
@@ -11,9 +10,9 @@ load_dotenv()
 
 app = Flask(__name__)
 app.config["SECRET_KEY"] = os.getenv("SECRET_KEY")
-socketio = SocketIO(app)
+socketio = SocketIO(app, cors_allowed_origin="*")
 
 
 @app.route("/")
 def index():
-    return "Project 2: TODO"
+    return render_template("index.html")

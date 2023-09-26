@@ -1,11 +1,19 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Flack</title>
-</head>
-<body>
-    
-</body>
-</html>
+{% extends "/layout.html"%}
+{%block title%}
+Registrate
+{%endblock%}
+
+{%block body%}
+<main class="containerInicio">
+    <div class="txtInicio">
+        <h1>Primero, escribe tu usuario</h1>
+        <p>Te sugerimos que uses un usario creativo</p>
+    </div>
+    <form class="formularioUsuario" action="#" method="post">
+      <label for="usuario"></label>
+      <input type="text" class="form-control" name="usuario" id="usuario" aria-describedby="emailHelpId" placeholder="Ingresa tu usuario">
+      <span>@</span>
+      <button>Continuar</button>
+    </form>
+</main>
+{%endblock%}
