@@ -16,3 +16,12 @@ socketio = SocketIO(app, cors_allowed_origin="*")
 @app.route("/")
 def index():
     return render_template("index.html")
+
+@app.route('/canales')
+def canales():
+    return render_template("canales.html")
+
+@socketio.on("saludo")
+def saludar(dato):
+    print(dato["nombre"])
+    emit("saludoRecibido", {"mensaje": dato["mensaje"], "nombre":dato["nombre"]}, broadcast=True, include_self=False)

@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="/static/css/style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+    <title>Flack</title>
+</head>
+<body>
+    <main class="container">
+        <aside class="leftSide"> 
+            <!-- header -->
+            <div class="header">
+                <div class="userimg">
+                    <img src="/static/img/user.png" alt="" class="cover">
+                </div>
+                <ul class="nav_icons">
+                    <li><i class="fa-solid fa-message"></i></li>
+                    <li><i class="fa-regular fa-circle-stop"></i></li>
+                    <li><i class="fa-solid fa-ellipsis-vertical"></i></li>
+                </ul>
+            </div>
+            <!-- search  -->
+            <div class="search_chat">
+                <div>
+                    <input type="text" placeholder="Search or start new chat">
+                    <i class="fa-solid fa-magnifying-glass"></i>
+                </div>
+            </div>
+
+            <!-- lista de chats -->
+            <div class="listaChat">
+                <div class="chat active">
+                    <div class="imgChat">
+                        <img src="/static/img/user.png" alt="" class="cover">
+                    </div>
+                    <div class="detallesChat">
+                        <div class="nombreChat">
+                            <h4>Jerry Espino</h4>
+                            <!--fecha o hora-->
+                            <p class="time">4:20</p>
+                        </div>
+                        <div class="mensajeChat">
+                            <p>Este es un mesaje largo para probar el overflow-hidden</p>
+                        </div>
+                    </div>
+                </div>
+                <!--chat no leido-->
+                <div class="chat unread">
+                    <div class="imgChat">
+                        <img src="/static/img/user.png" alt="" class="cover">
+                    </div>
+                    <div class="detallesChat">
+                        <div class="nombreChat">
+                            <h4>El no perdona nada 3000</h4>
+                            <p class="time">5:55</p>
+                        </div>
+                        <div class="mensajeChat">
+                            <p>Este es un mesaje que no ha sido abierto</p>
+                            <b>1</b>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </aside>
+        <aside class="rigthSide">
+            <div class="header">
+                <div class="imgText">
+                    <div class="userimg">
+                        <img src="/static/img/user.png" alt="" class="cover">
+                    </div>
+                    <h4>Jerry Espino <br><span>online</span></h4>
+                </div>
+                <ul class="nav_icons">
+                    <li><i class="fa-solid fa-magnifying-glass"></i></li>
+                    <li><i class="fa-solid fa-ellipsis-vertical"></i></li>
+                </ul>
+            </div>
+
+            <!--  chatbox  -->
+            <div class="chatBox">
+                <div class="mensaje my_mensaje">
+                    <p>Hola<br><span>12:15</span></p>
+                </div>
+                <div class="mensaje friend_mensaje">
+                    <p>Hola, ¿Cómo esatás?<br><span>12:16</span></p>
+                </div>
+                <div class="mensaje my_mensaje">
+                    <p>Bien, gracias a Dios, ¿Y tú?<br><span>12:16</span></p>
+                </div>
+                <div class="mensaje friend_mensaje">
+                    <p>También estoy bien.<br><span>12:16</span></p>
+                </div>
+                <div class="mensaje my_mensaje">
+                    <p>Que alegre. vamos a ir?<br><span>12:17</span></p>
+                </div>
+                <div class="mensaje friend_mensaje">
+                    <p>Si, claro, a como habiamos quedado<br><span>12:17</span></p>
+                </div>
+                <div class="mensaje my_mensaje">
+                    <p>Dale pues, solo era para confirmar<br><span>12:17</span></p>
+                </div>
+                <div class="mensaje friend_mensaje">
+                    <p>Nos vemos al rato<br><span>12:18</span></p>
+                </div>
+                <div class="mensaje my_mensaje">
+                    <p>Asi quedamos<br><span>12:18</span></p>
+                </div>
+                <div class="mensaje friend_mensaje">
+                    <p>Dale<br><span>12:18</span></p>
+                </div>
+                <div class="mensaje my_mensaje">
+                    <p>Que no se te olvide<br><span>12:19</span></p>
+                </div>
+                <div class="mensaje friend_mensaje">
+                    <p>Claro, no te preocupes<br><span>12:19</span></p>
+                </div>
+                <div class="mensaje my_mensaje">
+                    <p>Ve preparado<br><span>12:19</span></p>
+                </div>
+                <div class="mensaje friend_mensaje">
+                    <p>Si lo haré<br><span>12:19</span></p>
+                </div>
+            </div>
+
+            <!--   Chat input   -->
+            <div class="chatbox_input">
+                <i class="fa-regular fa-face-laugh"></i>
+                <i class="fa-solid fa-paperclip"></i>
+                <input type="text" name="mensaje" id="mensaje" placeholder="Escribe un mensaje">
+                <i class="fa-solid fa-microphone"></i>
+
+            </div>
+        </aside>
+    </main>
+    <script src="/static/js/app.js"></script>
+</body>
+</html>
