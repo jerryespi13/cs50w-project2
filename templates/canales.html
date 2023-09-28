@@ -1,13 +1,9 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="/static/css/style.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
-    <title>Flack</title>
-</head>
-<body>
+{% extends "/layout.html"%}
+{%block title%}
+Registrate
+{%endblock%}
+{%block body%}
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
     <main class="container">
         <aside class="leftSide"> 
             <!-- header -->
@@ -18,7 +14,15 @@
                 <ul class="nav_icons">
                     <li><i class="fa-solid fa-message"></i></li>
                     <li><i class="fa-regular fa-circle-stop"></i></li>
-                    <li><i class="fa-solid fa-ellipsis-vertical"></i></li>
+                    <li>
+                        <i class="fa-solid fa-ellipsis-vertical" id="dropdown">
+                            <div class="dropdown-content">
+                                <div href="#">Nueva Sala</div>
+                                <div href="#">Configuración</div>
+                                <div href="#">Cerrar Sesión</div>
+                            </div>
+                        </i>
+                    </li>
                 </ul>
             </div>
             <!-- search  -->
@@ -136,4 +140,4 @@
     </main>
     <script src="/static/js/app.js"></script>
 </body>
-</html>
+{%endblock%}
