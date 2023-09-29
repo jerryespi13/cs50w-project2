@@ -2,6 +2,9 @@ import os
 from flask import Flask, render_template, redirect, request, flash
 from flask_socketio import SocketIO, emit, join_room, leave_room
 
+# para manejo de tiempo
+from datetime import datetime
+
 # para trabajar con variables de entorno desde el archivo .
 from dotenv import load_dotenv
 
@@ -19,11 +22,14 @@ usuarios=list()
 # variable donde se guardan las salas
 chats = dict()
 
+fecha = datetime.now().strftime("%d-%m-%Y %H:%M").split(" ")
+
 # chat por defecto
 chats['general'] = [
                     {"nombre_sala": "General"},
-                    {"mensajes":  ["Bienvenido"]},
-                    {"usuarios": []}
+                    {"mensajes":  [["Bienvenido al chat general",fecha]]},
+                    {"usuarios": []},
+                    {"numero_mensajes":""}
                     ]
 
 @app.route("/", methods=["GET", "POST"])
@@ -57,5 +63,7 @@ def saludar(dato):
 def send_room_list(dato):
     rooms=list()
     for chat in chats:
+        #cantidad de chats en el chat
+        chats[chat][3]=len(chats[chat][1]["mensajes"])
         rooms.append(chats[chat])
     emit("room_list", {"rooms":rooms})
