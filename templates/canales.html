@@ -34,13 +34,13 @@ Registrate
             </div>
 
             <!-- lista de chats -->
-            <div class="listaChat">
+            <div class="listaChat" id="listaChat">
                 <div class="chat active">
                     <div class="imgChat">
                         <img src="/static/img/user.png" alt="" class="cover">
                     </div>
                     <div class="detallesChat">
-                        <div class="nombreChat">
+                        <div class="nombreChat" id="nombreChat">
                             <h4>Jerry Espino</h4>
                             <!--fecha o hora-->
                             <p class="time">4:20</p>
@@ -138,6 +138,7 @@ Registrate
             </div>
         </aside>
     </main>
+    <script src="https://cdn.socket.io/4.5.4/socket.io.min.js"></script>
     <script src="/static/js/app.js"></script>
 </body>
 {%endblock%}

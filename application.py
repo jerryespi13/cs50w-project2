@@ -1,6 +1,6 @@
 import os
 from flask import Flask, render_template, redirect, request, flash
-from flask_socketio import SocketIO, emit
+from flask_socketio import SocketIO, emit, join_room, leave_room
 
 # para trabajar con variables de entorno desde el archivo .
 from dotenv import load_dotenv
@@ -16,6 +16,16 @@ socketio = SocketIO(app, cors_allowed_origin="*")
 # variable donde se guardan los usuarios
 usuarios=list()
 
+# variable donde se guardan las salas
+chats = dict()
+
+# chat por defecto
+chats['general'] = [
+                    {"nombre_sala": "General"},
+                    {"mensajes":  ["Bienvenido"]},
+                    {"usuarios": []}
+                    ]
+
 @app.route("/", methods=["GET", "POST"])
 def index():
     print(usuarios)
@@ -23,7 +33,6 @@ def index():
         return render_template("index.html")
     else:
         usuario = request.form.get("usuario")
-        print(usuario)
         if usuario == "" or usuario == " ":
             flash("Usuario invalido")
             return redirect("/")
@@ -42,3 +51,11 @@ def canales():
 def saludar(dato):
     print(dato["nombre"])
     emit("saludoRecibido", {"mensaje": dato["mensaje"], "nombre":dato["nombre"]}, broadcast=True, include_self=False)
+
+# listamos cada chat existente
+@socketio.on("get_room_list")
+def send_room_list(dato):
+    rooms=list()
+    for chat in chats:
+        rooms.append(chats[chat])
+    emit("room_list", {"rooms":rooms})
