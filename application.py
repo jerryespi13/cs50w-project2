@@ -1,5 +1,5 @@
 import os
-from flask import Flask, render_template, redirect, request, flash
+from flask import Flask, render_template, redirect, request, flash, session
 from flask_socketio import SocketIO, emit, join_room, leave_room
 
 # para manejo de tiempo
@@ -34,8 +34,12 @@ chats['general'] = [
 
 @app.route("/", methods=["GET", "POST"])
 def index():
-    print(usuarios)
+    global usuarios
     if request.method == "GET":
+        # si el usuario ya se registró no puede ver la pagina de registro
+        # lo padrá hacer cuando cierre sesión
+        if "user" in session:
+            return redirect("/canales")
         return render_template("index.html")
     else:
         usuario = request.form.get("usuario")
@@ -47,11 +51,19 @@ def index():
             return redirect("/")
         else:
             usuarios.append(usuario)
+            session["user"] = usuario
             return redirect("/canales")
 
 @app.route('/canales')
 def canales():
     return render_template("canales.html")
+
+@app.route('/cerrarsesion')
+def cerrarSesion():
+    global usuarios
+    usuarios.remove(session["user"])
+    session.clear()
+    return redirect("/")
 
 @socketio.on("saludo")
 def saludar(dato):
