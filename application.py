@@ -34,6 +34,7 @@ chats['general'] = [
 
 @app.route("/", methods=["GET", "POST"])
 def index():
+  
     global usuarios
     if request.method == "GET":
         # si el usuario ya se registró no puede ver la pagina de registro
@@ -56,11 +57,16 @@ def index():
 
 @app.route('/canales')
 def canales():
+    if not "user" in session:
+        flash("Inicia sesión")
+        return redirect("/")
     return render_template("canales.html")
 
 @app.route('/cerrarsesion')
 def cerrarSesion():
     global usuarios
+    if not "user" in session:
+        return redirect("/")
     usuarios.remove(session["user"])
     session.clear()
     return redirect("/")
@@ -79,3 +85,8 @@ def send_room_list(dato):
         chats[chat][3]=len(chats[chat][1]["mensajes"])
         rooms.append(chats[chat])
     emit("room_list", {"rooms":rooms})
+
+@socketio.on("conectado")
+def conectado(dato):
+    usuario = session["user"]
+    emit("clienteConectado", {"usuario":usuario})

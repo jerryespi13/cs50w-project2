@@ -1,6 +1,20 @@
 const socket = io();
+
+// pedimos el nombre de usario para luego guardarlo en local storage
+socket.emit("conectado", {"mensaje":"usuario"})
+
+// guardamos el usuario en local storage
+socket.on("clienteConectado", function(dato){
+    localStorage.usuario = dato["usuario"]
+})
+
+// cuando se cierra sesion limpiamos el local storage
+function cerrarSesion(){
+    localStorage.clear()
+}
+
 // Pedimos la lista de todos los chats
-socket.emit("get_room_list",{"nombre":"Jerry"})
+socket.emit("get_room_list",{"nombre":" "})
 
 //Obtenemos la lista de todos los chats
 socket.on("room_list", function(dato){
