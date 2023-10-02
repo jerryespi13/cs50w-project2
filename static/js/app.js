@@ -1,7 +1,6 @@
 const socket = io();
 
 usuario = localStorage.getItem("usuario")
-console.log(usuario)
 // redirigimos a index al usuario que quiera entrar al enlace  de los chat
 // sin haberse registrado
 if(usuario === null){
@@ -20,7 +19,8 @@ socket.on("sesionCerrada", function(dato){
 })
 
 // Pedimos la lista de todos los chats
-socket.emit("get_room_list",{"nombre":" "})
+function listarSalas(){
+    socket.emit("get_room_list",{"nombre":" "})
 
 //Obtenemos la lista de todos los chats
 socket.on("room_list", function(dato){
@@ -74,6 +74,33 @@ socket.on("room_list", function(dato){
         listaChat.innerHTML+=htmlListadoChat;
     });
 });
+}
+listarSalas()
+
+
+// creacion de sala
+function crearSala(){
+    nombreSala = document.querySelector("#nombreSala").value
+    socket.emit("crearSala", {"sala":nombreSala})
+}
+
+socket.on("salaCreada", function(dato){
+    // limpiamos el input
+    document.querySelector("#nombreSala").value = ""
+    // listamos las salas
+    listarSalas()
+    // volvemos a la vista sala
+    document.querySelector("#chats").checked = true
+    socket.emit("unirseSala", {"sala":dato["sala"]})
+})
+
+// creacion de sala con enter
+function enter(event) {
+    // Número 13 es la tecla 'Enter'
+    if (event.keyCode === 13) {
+      crearSala()
+    }
+  }
 
 function enviarSaludo(){
     let nombre = document.querySelector("#nombre").value

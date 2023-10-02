@@ -69,6 +69,20 @@ def conectarUsuario(dato):
     usuarios.append(usuario)
     emit("usuarioConectado", {"usuario": usuario})
 
+@socketio.on("crearSala")
+def crearSala(dato):
+    sala = dato["sala"]
+    fecha = datetime.now().strftime("%d-%m-%Y %H:%M").split(" ")
+    chats[sala] = [
+                    {"nombre_sala": sala},
+                    {"mensajes":  [[f"Sala {sala} creada el {fecha[0]} {fecha[1]}",fecha]]},
+                    {"usuarios": []},
+                    {"numero_mensajes":""}
+                    ]
+    print(chats)
+    emit("salaCreada",{"sala":sala})
+
+
 @socketio.on("saludo")
 def saludar(dato):
     print(dato["nombre"])
