@@ -1,6 +1,12 @@
 const socket = io();
 
 usuario = localStorage.getItem("usuario")
+console.log(usuario)
+// redirigimos a index al usuario que quiera entrar al enlace  de los chat
+// sin haberse registrado
+if(usuario === null){
+    window.location.href="/"
+  }
 
 // cerrar session
 function cerrarSesion(){

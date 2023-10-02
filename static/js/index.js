@@ -3,7 +3,7 @@ const socket = io();
 // obtenemos lo que hay en localstorage
 let usuario = localStorage.getItem("usuario")
 
-// preguntamos si existe ese usuaario en la lista de usuario
+// preguntamos si existe ese usuario en la lista de usuario
 if(usuario !== null){
   socket.emit("existeUsuario", {"usuario":usuario})
 }
