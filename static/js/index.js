@@ -27,3 +27,10 @@ function conectarUsuario(){
 let usuarioIngresado = document.querySelector("#usuario").value
 socket.emit("conectarUsuario", {"mensaje":"conectame", "usuario":usuarioIngresado})
 }
+
+function enter(event) {
+  // Número 13 es la tecla 'Enter'
+  if (event.keyCode === 13) {
+    conectarUsuario()
+  }
+}

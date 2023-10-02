@@ -11,7 +11,7 @@ Registrate
   </div>
   <div class="formularioUsuario">
     <label for="usuario"></label>
-    <input type="text" class="form-control" name="usuario" id="usuario"
+    <input type="text" onkeyup="enter(event)" class="form-control" name="usuario" id="usuario"
       aria-describedby="emailHelpId" placeholder="Ingresa tu usuario" autofocus autocomplete="off">
     <span>@</span>
     <button onclick="conectarUsuario()">Continuar</button>
