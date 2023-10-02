@@ -1,5 +1,5 @@
 import os
-from flask import Flask, render_template, redirect, request, flash, session
+from flask import Flask, render_template
 from flask_socketio import SocketIO, emit, join_room, leave_room
 
 # para manejo de tiempo
@@ -32,44 +32,42 @@ chats['general'] = [
                     {"numero_mensajes":""}
                     ]
 
-@app.route("/", methods=["GET", "POST"])
+# ruta index
+@app.route("/")
 def index():
-  
-    global usuarios
-    if request.method == "GET":
-        # si el usuario ya se registró no puede ver la pagina de registro
-        # lo padrá hacer cuando cierre sesión
-        if "user" in session:
-            return redirect("/canales")
-        return render_template("index.html")
-    else:
-        usuario = request.form.get("usuario")
-        if usuario == "" or usuario == " ":
-            flash("Usuario invalido")
-            return redirect("/")
-        if usuario in usuarios:
-            flash('Usuario ya existe')
-            return redirect("/")
-        else:
-            usuarios.append(usuario)
-            session["user"] = usuario
-            return redirect("/canales")
+    return render_template("index.html")
 
+# ruta de los chats
 @app.route('/canales')
 def canales():
-    if not "user" in session:
-        flash("Inicia sesión")
-        return redirect("/")
     return render_template("canales.html")
 
-@app.route('/cerrarsesion')
-def cerrarSesion():
+# verificamos si el usuario guardado en local storage existe en la lista usuarios
+# si existe, se conecta automaticamente sin pedir usuario en la vista
+@socketio.on("existeUsuario")
+def persistenciaUsuario(dato):
+    if dato["usuario"] in usuarios:
+        emit("usuarioConectado",{"mensaje":"usuario existe","usuario":dato["usuario"]})
+
+# coneccion de un usuario
+@socketio.on("conectarUsuario")
+def conectarUsuario(dato):
     global usuarios
-    if not "user" in session:
-        return redirect("/")
-    usuarios.remove(session["user"])
-    session.clear()
-    return redirect("/")
+    usuario = dato["usuario"]
+    # validamos que el usuario no venga vacio
+    if usuario.isspace() or len(usuario) ==0:
+        mensaje = "Usuario invalido"
+        emit('mensaje', {"mensaje":mensaje})
+        return
+    # validamos que el usuario no exista
+    elif usuario in usuarios:
+        mensaje = "Elija otro usuario"
+        emit('mensaje', {"mensaje":mensaje})
+        return
+    
+    # si pasa la validacion agregamos ese usuario a lista de usuarios
+    usuarios.append(usuario)
+    emit("usuarioConectado", {"usuario": usuario})
 
 @socketio.on("saludo")
 def saludar(dato):
@@ -86,7 +84,10 @@ def send_room_list(dato):
         rooms.append(chats[chat])
     emit("room_list", {"rooms":rooms})
 
-@socketio.on("conectado")
-def conectado(dato):
-    usuario = session["user"]
-    emit("clienteConectado", {"usuario":usuario})
+# cerrar sesion
+@socketio.on("cerrarSesion")
+def cerrarSesion(dato):
+    global usuarios
+    # borramos el usuario en cuestion
+    emit("sesionCerrada",{"mensaje":"sesion cerrada"})
+    usuarios.remove(dato["usuario"])

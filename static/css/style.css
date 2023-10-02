@@ -420,6 +420,7 @@ body{
 }
 
 .formularioUsuario .alert{
+    visibility: hidden;
     position: relative;
     width: 30%;
     height: 40px;
