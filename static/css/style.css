@@ -131,9 +131,24 @@ body{
     color: #bbb;
 }
 
+#chats, #nuevoChat, #configuracion{
+    display: none;
+}
+
+#chats:checked ~ .listaChat,
+#nuevoChat:checked ~ .nuevochat,
+#configuracion:checked ~ .configuracion
+{
+    opacity: 1;
+    visibility: visible;
+}
+
 .listaChat{
-    position: relative;
+    position: absolute;
     height: calc(100% - 110px); /* 60px (header) + 50px(search) = 110 px ocuapan del asideLeft*/
+    width: 100%;
+    opacity: 0;
+    visibility: hidden;
     overflow-y: auto;
 }
 
@@ -216,6 +231,26 @@ body{
     justify-content: center;
     align-items: center;
     font-size: 0.5em;
+}
+
+.configuracion{
+    position: absolute;
+    height: calc(100% - 110px); /* 60px (header) + 50px(search) = 110 px ocuapan del asideLeft*/
+    width: 100%;
+    background-color: blue;
+    opacity: 0;
+    visibility: hidden;
+    overflow-y: auto;
+}
+
+.nuevochat{
+    position: absolute;
+    height: calc(100% - 110px); /* 60px (header) + 50px(search) = 110 px ocuapan del asideLeft*/
+    width: 100%;
+    overflow-y: auto;
+    background: red;
+    opacity: 0;
+    visibility: hidden;
 }
 
 .imgText{
@@ -470,13 +505,14 @@ body{
     z-index: 1;
 }
 
-.dropdown-content a{
+.dropdown-content label{
     padding: 12px 16px;
     text-decoration: none;
     color:#51585c
 }
 
-.dropdown-content a:hover{
+.dropdown-content label:hover{
+    cursor: pointer;
     background-color: #aaa;
 }
 

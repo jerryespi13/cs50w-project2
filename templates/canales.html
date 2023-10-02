@@ -17,9 +17,10 @@ Chatea
                     <li>
                         <i class="fa-solid fa-ellipsis-vertical" id="dropdown">
                             <div class="dropdown-content">
-                                <a href="#">Nueva Sala</a>
-                                <a href="#">Configuración</a>
-                                <a href="#" onclick="cerrarSesion()">Cerrar Sesión</a>
+                                <label for="chats">Salas</label>
+                                <label for="nuevoChat">Nueva Sala</label>
+                                <label for="configuracion">Configuración</label>
+                                <label  onclick="cerrarSesion()">Cerrar Sesión</label>
                             </div>
                         </i>
                     </li>
@@ -33,6 +34,7 @@ Chatea
                 </div>
             </div>
 
+            <input type="radio" name="radio" id="chats" checked>
             <!-- lista de chats -->
             <div class="listaChat" id="listaChat">
                 <div class="chat active">
@@ -67,6 +69,17 @@ Chatea
                     </div>
                 </div>
             </div>
+
+            <input type="radio" name="radio" id="nuevoChat">
+            <div class="nuevochat" >
+                nuevo chat
+            </div>
+
+            <input type="radio" name="radio" id="configuracion">
+            <div class="configuracion">
+                configuracion
+            </div>
+
         </aside>
         <aside class="rigthSide">
             <div class="header">
