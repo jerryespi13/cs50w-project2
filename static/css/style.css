@@ -248,9 +248,43 @@ body{
     height: calc(100% - 110px); /* 60px (header) + 50px(search) = 110 px ocuapan del asideLeft*/
     width: 100%;
     overflow-y: auto;
-    background: red;
     opacity: 0;
     visibility: hidden;
+}
+.crearSala{
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    top: 10px;
+    margin: 0 auto;
+    width: 90%;
+}
+
+.crearSala input{
+    width: 100%;
+    height: 40px;
+    padding-left: 30px;
+    border-radius: 10px;
+    background: #28fa6ac8;
+    border-color: #51585c;
+    font-size: 1.2em;
+    font-weight: 400;
+    font-weight: 400;
+    outline: none;
+    color: #fff;
+}
+
+.crearSala button{
+    margin-top: 30px;
+    width: 100%;
+    height: 40px;
+    background-color: #06d755;
+    color: #fff;
+    border-color: #51585c;
+    font-size: 1.2em;
+    font-weight: 500;
+    border-radius: 50px;
+    cursor: pointer;
 }
 
 .imgText{
