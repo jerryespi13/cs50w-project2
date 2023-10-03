@@ -80,7 +80,19 @@ Chatea
 
             <input type="radio" name="radio" id="configuracion">
             <div class="configuracion">
-                configuracion
+                <div class="userimg">
+                    <img src="/static/img/user.png" alt="" class="cover">
+                </div>
+                <div class="infoPerfil">
+                    <label for="">Tu Usuario</label>
+                    <div class="infonombre">
+                        <span id="nombreusuariodefault" class="nombreusuariodefault"></span>
+                        <input type="text" name="nombreusuario" id="nombreusuario" class="nombreusuario">
+                        <button title="Haz click para editar tu usuario">
+                            <i id="editarConfirmar" onclick="editarConfirmar(this)" class="fa-solid fa-pen" style="color: #606876;"></i>
+                        </button>                            
+                    </div>
+                </div>
             </div>
 
         </aside>

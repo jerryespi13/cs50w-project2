@@ -1,5 +1,12 @@
 const socket = io();
 
+//agragamos algunos estilos a ciertos elementos en el DOM
+usuarioDefault = document.querySelector("#nombreusuariodefault")
+nombreUsuario = document.querySelector("#nombreusuario")
+usuarioDefault.style.visibility = "visible"
+nombreUsuario.style.visibility = "hidden"
+
+
 usuario = localStorage.getItem("usuario")
 // redirigimos a index al usuario que quiera entrar al enlace  de los chat
 // sin haberse registrado
@@ -113,3 +120,22 @@ function enviarSaludo(){
 socket.on("saludoRecibido", function(dato){
     alert(dato.nombre + "dice: " + dato.mensaje)
 })
+
+// funcion para editar el nombre de usuario
+function editarConfirmar(x){
+    x.classList.toggle("fa-check");
+
+    // alternamis visibilidad entre los dos elementos
+    if(usuarioDefault.style.visibility === "visible"){
+        usuarioDefault.style.visibility = "hidden"
+        nombreUsuario.style.visibility = "visible"
+    }
+    else{
+        usuarioDefault.style.visibility = "visible"
+        nombreUsuario.style.visibility = "hidden"
+    }
+    nombreUsuario.value = usuarioDefault.innerHTML
+    nombreUsuario.focus()
+    
+}
+document.querySelector("#nombreusuariodefault").innerHTML = usuario
