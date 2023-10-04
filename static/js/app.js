@@ -102,6 +102,11 @@ function joinRoom(sala){
 
 // uniendose a sala o chat
 socket.on("chatConectado", function(dato){
+    //nombre del chat o sala
+    document.querySelector("#headerchat").style.visibility = "visible"
+    document.querySelector("#nombreChat").innerHTML = dato["chat"] + ` <br><span>online</span>`
+    document.querySelector("#chatInput").style.visibility = "visible"
+
     // creamos el html para la sala con un id
     var chat = document.querySelector('#listaMensajes');
     // si el html de la sala no existe se crea, si existe no se crea para no repetir
@@ -138,7 +143,7 @@ socket.on("salaCreada", function(dato){
     listarSalas()
     // volvemos a la vista sala
     document.querySelector("#chats").checked = true
-    socket.emit("unirseSala", {"sala":dato["sala"]})
+    joinRoom(dato["sala"])
 })
 
 // creacion de sala con enter

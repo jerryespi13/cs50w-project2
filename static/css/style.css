@@ -341,6 +341,15 @@ body{
     border: none;
 }
 
+/* cabecera de cada chat */
+#headerchat{
+    visibility: hidden;
+}
+
+#chatInput{
+    visibility: hidden;
+}
+
 .imgText{
     position: relative;
     display: flex;
