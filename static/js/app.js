@@ -94,7 +94,7 @@ socket.on("room_list", function(dato){
 }
 listarSalas()
 
-//funcion para unirse a un chat o room
+// funcion para unirse a un chat o room
 function joinRoom(sala){
     let room = sala
     socket.emit("join", {"room":room})
@@ -123,12 +123,25 @@ socket.on("chatConectado", function(dato){
     </div>`
 
     localStorage.chatActivo = dato["chat"]
+    document.querySelector("#"+dato["chat"]).removeAttribute("onclick")
 })
 
-function leaveRoom(sala){
-    let room = sala
-    socket.emit('leave', { 'room': room })
+function leaveRoom(){
+    let room = localStorage.getItem("chatActivo")
+    socket.emit('leave', { 'room': room, "usuario":usuario })
+    document.querySelector("#headerchat").style.visibility = "hidden"
+    document.querySelector("#chatInput").style.visibility = "hidden"
+    document.querySelector("#chats"+room).innerHTML=""
 }
+
+socket.on("chatDesconectado", function(dato){
+    console.log(dato["msg"])
+    var mensaje = document.querySelector("#chats"+dato["chat"]);
+    mensaje.innerHTML += `<div class="mensaje my_mensaje">
+    <p>`+ dato["msg"] +`<br><span>12:16</span></p>
+    </div>`
+
+})
 
 // creacion de sala
 function crearSala(){
@@ -143,7 +156,7 @@ socket.on("salaCreada", function(dato){
     listarSalas()
     // volvemos a la vista sala
     document.querySelector("#chats").checked = true
-    joinRoom(dato["sala"])
+    //joinRoom(dato["sala"])
 })
 
 // creacion de sala con enter

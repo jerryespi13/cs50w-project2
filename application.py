@@ -96,9 +96,10 @@ def on_join(data):
 
 @socketio.on('leave')
 def on_leave(data):
+    usuario = data["usuario"]
     room = data['room']
     leave_room(room)
-    emit('chatConectado', {'msg': 'Te has salido de la sala: ' + room + '!'}, to=room)
+    emit('chatDesconectado', {'msg': 'El usuario: ' + usuario + ' ha abandonado la sala: ' + room + '!', 'chat':room}, to=room, include_self=True)
 
 @socketio.on("saludo")
 def saludar(dato):
