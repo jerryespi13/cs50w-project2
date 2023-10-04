@@ -8,11 +8,9 @@ nombreUsuario.style.visibility = "hidden"
 
 if(localStorage.getItem("chatActivo")){
 let chatSeleccionadoLocalStorage = localStorage.getItem("chatActivo")
-let chatSeleccionado = document.querySelector("#"+chatSeleccionadoLocalStorage)
-if(!chatSeleccionado){
-    let room = chatSeleccionadoLocalStorage.split("radioChats")[1]
+if(chatSeleccionadoLocalStorage){
+    let room = chatSeleccionadoLocalStorage
     joinRoom(room)
-    chatSeleccionado = document.querySelector("#"+chatSeleccionadoLocalStorage)
     }
 }
 usuario = localStorage.getItem("usuario")
@@ -118,6 +116,8 @@ socket.on("chatConectado", function(dato){
     mensaje.innerHTML += `<div class="mensaje my_mensaje">
     <p>`+ dato["msg"] +`<br><span>12:16</span></p>
     </div>`
+
+    localStorage.chatActivo = dato["chat"]
 })
 
 function leaveRoom(sala){
