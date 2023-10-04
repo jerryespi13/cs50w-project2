@@ -6,7 +6,15 @@ nombreUsuario = document.querySelector("#nombreusuario")
 usuarioDefault.style.visibility = "visible"
 nombreUsuario.style.visibility = "hidden"
 
-
+if(localStorage.getItem("chatActivo")){
+let chatSeleccionadoLocalStorage = localStorage.getItem("chatActivo")
+let chatSeleccionado = document.querySelector("#"+chatSeleccionadoLocalStorage)
+if(!chatSeleccionado){
+    let room = chatSeleccionadoLocalStorage.split("radioChats")[1]
+    joinRoom(room)
+    chatSeleccionado = document.querySelector("#"+chatSeleccionadoLocalStorage)
+    }
+}
 usuario = localStorage.getItem("usuario")
 // redirigimos a index al usuario que quiera entrar al enlace  de los chat
 // sin haberse registrado
@@ -63,20 +71,24 @@ socket.on("room_list", function(dato){
         }
         
         // html de cada chat
-        const htmlListadoChat = `<div class="chat active">
-                            <div class="imgChat">
-                                <img src="/static/img/profile.png" alt="" class="cover">
-                            </div>
-                            <div class="detallesChat">
-                                <div class="nombreChat" id="nombreChat">
-                                    <h4>`+ room[0]["nombre_sala"] +`</h4>
-                                    <!--fecha o hora-->
-                                    <p class="time">`+ fechaMostrar +`</p>
-                                </div>
-                            <div class="mensajeChat">
-                                <p>`+ room[1]["mensajes"][ultimoChat][0] +`</p>
-                            </div>
-                        </div>`
+        const htmlListadoChat = `<label for="radioChats`+room[0]["nombre_sala"]+`">
+        <div class="chat active" id="`+room[0]["nombre_sala"]+`" onclick="joinRoom('`+ room[0]["nombre_sala"] +`')">
+        <div class="imgChat">
+            <img src="/static/img/profile.png" alt="" class="cover">
+        </div>
+        <div class="detallesChat">
+            <div class="nombreChat">
+                <h4>`+ room[0]["nombre_sala"] +`</h4>
+                <!--fecha o hora-->
+                <p class="time">`+ fechaMostrar +`</p>
+            </div>
+        <div class="mensajeChat">
+            <p>`+ room[1]["mensajes"][ultimoChat][0] +`</p>
+        </div>
+    </div>
+                                </label>
+        
+        `
         // introducimos cada chat listado al html
         listaChat.innerHTML+=htmlListadoChat;
     });
@@ -84,6 +96,34 @@ socket.on("room_list", function(dato){
 }
 listarSalas()
 
+//funcion para unirse a un chat o room
+function joinRoom(sala){
+    let room = sala
+    socket.emit("join", {"room":room})
+}
+
+// uniendose a sala o chat
+socket.on("chatConectado", function(dato){
+    // creamos el html para la sala con un id
+    var chat = document.querySelector('#listaMensajes');
+    // si el html de la sala no existe se crea, si existe no se crea para no repetir
+    if (!document.querySelector('#chats'+dato["chat"])){
+        chat.innerHTML += ` <input type="radio" name="radioChat" id="radioChats`+dato["chat"]+`" checked>
+                            <div class="chatBox" id="chats`+dato["chat"]+`"></div>`
+                        }
+                        
+
+    // añadimos el mensaje de bienbenida
+    var mensaje = document.querySelector("#chats"+dato["chat"]);
+    mensaje.innerHTML += `<div class="mensaje my_mensaje">
+    <p>`+ dato["msg"] +`<br><span>12:16</span></p>
+    </div>`
+})
+
+function leaveRoom(sala){
+    let room = sala
+    socket.emit('leave', { 'room': room })
+}
 
 // creacion de sala
 function crearSala(){

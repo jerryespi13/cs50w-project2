@@ -359,12 +359,15 @@ body{
     color: #555;
 }
 
-.chatBox{
+.listaMensajes{
     position: relative;
     width: 100%;
     height: calc(100% - 120px); /* 60px de cabecera + 60px de barra abajo*/
     padding: 0 50px 0 50px;
     overflow-y: auto;
+}
+.chatBox{
+    position: relative;
 }
 
 .mensaje{

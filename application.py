@@ -32,6 +32,13 @@ chats['general'] = [
                     {"numero_mensajes":""}
                     ]
 
+chats['jerry'] = [
+                    {"nombre_sala": "Jerry"},
+                    {"mensajes":  [["Bienvenido al chat Jerry",fecha]]},
+                    {"usuarios": []},
+                    {"numero_mensajes":""}
+                    ]
+
 # ruta index
 @app.route("/")
 def index():
@@ -79,9 +86,19 @@ def crearSala(dato):
                     {"usuarios": []},
                     {"numero_mensajes":""}
                     ]
-    print(chats)
-    emit("salaCreada",{"sala":sala})
+    emit("salaCreada",{"sala":sala}, broadcast=True)
 
+@socketio.on('join')
+def on_join(data):
+    room = data['room']
+    join_room(room)
+    emit("chatConectado", {'msg': '¡Te has unido a la sala: ' + room + '!', "chat":room}, to=room)
+
+@socketio.on('leave')
+def on_leave(data):
+    room = data['room']
+    leave_room(room)
+    emit('chatConectado', {'msg': 'Te has salido de la sala: ' + room + '!'}, to=room)
 
 @socketio.on("saludo")
 def saludar(dato):
