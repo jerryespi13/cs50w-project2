@@ -133,12 +133,10 @@ socket.on("chatConectado", function(dato){
 function leaveRoom(){
     let sala = localStorage.getItem("chatActivo")
     let usuario = localStorage.getItem("usuario")
-    console.log("dejando sala "+sala)
     socket.emit('leave', { 'room': sala, "usuario":usuario })
 }
 
 socket.on("chatDesconectado", function(dato){
-    console.log(dato["msg"])
     var mensaje = document.querySelector("#chats"+dato["chat"]);
     mensaje.innerHTML += `<div class="mensaje my_mensaje">
     <p>`+ dato["msg"] +`<br><span>12:16</span></p>
@@ -175,7 +173,6 @@ function enviarSaludo(){
     let mensaje = document.querySelector("#mensaje").value
 
         socket.emit("saludo", {"nombre": nombre, "mensaje":mensaje})
-    console.log(mensaje)
 }
 
 socket.on("saludoRecibido", function(dato){
