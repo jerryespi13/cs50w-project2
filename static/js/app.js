@@ -148,15 +148,26 @@ socket.on("chatDesconectado", function(dato){
 function sendMenssage(){
     let sala = localStorage.getItem("chatActivo")
     let mensaje = document.querySelector("#mensaje").value
-    socket.emit("mensaje",{"sala":sala, "mensaje":mensaje})
+    let usuario = localStorage.getItem("usuario")
+    socket.emit("mensaje",{"sala":sala, "mensaje":mensaje, "usuario":usuario})
     document.querySelector("#mensaje").value = ""
 }
 
 socket.on("mensajeRecibido", function(dato){
     let mensaje = document.querySelector("#chats"+dato["chat"])
-    mensaje.innerHTML += `<div class="mensaje my_mensaje">
-    <p>`+ dato["mensaje"] +`<br><span>12:16</span></p>
+    console.log(dato["usuario"])
+    if(dato["usuario"]===localStorage.getItem("usuario")){
+        console.log("igual")
+        mensaje.innerHTML += `<div class="mensaje my_mensaje">
+    <p>`+ dato["mensaje"] +`<br><span>`+dato["fecha"][1]+`</span></p>
     </div>`
+    }
+    else{
+        mensaje.innerHTML += `<div class="mensaje friend_mensaje">
+       <p><span>`+dato["usuario"]+`</span><br>`+ dato["mensaje"] +`<br><span>`+dato["fecha"][1]+`</span></p>
+       </div>`
+    }
+    
 })
 
 // creacion de sala

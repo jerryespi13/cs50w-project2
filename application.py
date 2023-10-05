@@ -127,6 +127,8 @@ def cerrarSesion(dato):
 
 @socketio.on("mensaje")
 def obtener_mensaje(dato):
+    fecha = datetime.now().strftime("%d-%m-%Y %H:%M").split(" ")
     room = dato["sala"]
     message = dato["mensaje"]
-    emit("mensajeRecibido", {"mensaje":message, "chat":room}, room=room)
+    usuario = dato["usuario"]
+    emit("mensajeRecibido", {"mensaje":message, "chat":room, "fecha":fecha, "usuario":usuario}, room=room)
