@@ -116,8 +116,8 @@ socket.on("chatConectado", function(dato){
     var chat = document.querySelector('#listaMensajes');
     // si el html de la sala no existe se crea, si existe no se crea para no repetir
     if (!document.querySelector('#chats'+dato["chat"])){
-        chat.innerHTML += ` <input type="radio" name="radioChat" id="radioChats`+dato["chat"]+`" checked>
-                            <div class="chatBox" id="chats`+dato["chat"]+`"></div>`
+        chat.innerHTML += ` <input type="radio" class="radioChat" name="radioChat" id="radioChats`+dato["chat"]+`" checked>
+                            <div class="chatBox" style="display: none;" id="chats`+dato["chat"]+`"></div>`
                         }
                         
 
@@ -126,13 +126,21 @@ socket.on("chatConectado", function(dato){
     mensaje.innerHTML += `<div class="log">
     <p>`+ dato["msg"] +`<br><span>`+dato["fecha"][1]+`</span></p>
     </div>`
-
+    mensaje.style.display = "block"
     localStorage.chatActivo = dato["chat"]
 })
 
 function leaveRoom(){
     let sala = localStorage.getItem("chatActivo")
     let usuario = localStorage.getItem("usuario")
+    let mensaje = document.querySelector("#chats"+sala)
+    localStorage.removeItem('chatActivo');
+    if(mensaje){
+        mensaje.style.display = "none"
+        document.querySelector("#headerchat").style.visibility = "hidden"
+        document.querySelector("#chatInput").style.visibility = "hidden"
+    }
+
     socket.emit('leave', { 'room': sala, "usuario":usuario })
 }
 
@@ -143,23 +151,30 @@ socket.on("chatDesconectado", function(dato){
     </div>`
 })
 
+// funcion para mandar mensajes
 function sendMenssage(){
     let sala = localStorage.getItem("chatActivo")
     let mensaje = document.querySelector("#mensaje").value
     let usuario = localStorage.getItem("usuario")
     socket.emit("mensaje",{"sala":sala, "mensaje":mensaje, "usuario":usuario})
+    //limpiamos el input
     document.querySelector("#mensaje").value = ""
+    // posicionamos el cursor en el input
+    document.querySelector("#mensaje").focus()
 }
 
+// recibiendo el mensaje
 socket.on("mensajeRecibido", function(dato){
     let mensaje = document.querySelector("#chats"+dato["chat"])
     console.log(dato["usuario"])
+
+    // los mensajes propios los ponemos a la derecha
     if(dato["usuario"]===localStorage.getItem("usuario")){
-        console.log("igual")
         mensaje.innerHTML += `<div class="mensaje my_mensaje">
-    <p>`+ dato["mensaje"] +`<br><span>`+dato["fecha"][1]+`</span></p>
-    </div>`
+        <p>`+ dato["mensaje"] +`<br><span>`+dato["fecha"][1]+`</span></p>
+        </div>`
     }
+    // los de mas a la izquierda
     else{
         mensaje.innerHTML += `<div class="mensaje friend_mensaje">
        <p><span>`+dato["usuario"]+`</span><br>`+ dato["mensaje"] +`<br><span>`+dato["fecha"][1]+`</span></p>
@@ -206,7 +221,7 @@ socket.on("saludoRecibido", function(dato){
 function editarConfirmar(x){
     x.classList.toggle("fa-check");
 
-    // alternamis visibilidad entre los dos elementos
+    // alternamos visibilidad entre los dos elementos
     if(usuarioDefault.style.visibility === "visible"){
         usuarioDefault.style.visibility = "hidden"
         nombreUsuario.style.visibility = "visible"

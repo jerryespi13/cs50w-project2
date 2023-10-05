@@ -640,3 +640,7 @@ body{
     color: #dcf8c6;
     margin-top: 5px;
 }
+
+.radioChat{
+    display: none;
+}
