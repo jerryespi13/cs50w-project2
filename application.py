@@ -124,3 +124,9 @@ def cerrarSesion(dato):
     # borramos el usuario en cuestion
     emit("sesionCerrada",{"mensaje":"sesion cerrada"})
     usuarios.remove(dato["usuario"])
+
+@socketio.on("mensaje")
+def obtener_mensaje(dato):
+    room = dato["sala"]
+    message = dato["mensaje"]
+    emit("mensajeRecibido", {"mensaje":message, "chat":room}, room=room)
