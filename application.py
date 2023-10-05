@@ -91,15 +91,16 @@ def crearSala(dato):
 @socketio.on('join')
 def on_join(data):
     room = data['room']
+    usuario = data["usuario"]
     join_room(room)
-    emit("chatConectado", {'msg': '¡Te has unido a la sala: ' + room + '!', "chat":room}, to=room)
+    emit("chatConectado", {'msg': 'Hola, soy : ' + usuario + ' y me estoy conectando a la sala : ' + room + '!', "chat":room}, to=room)
 
 @socketio.on('leave')
 def on_leave(data):
     usuario = data["usuario"]
     room = data['room']
     leave_room(room)
-    emit('chatDesconectado', {'msg': 'El usuario: ' + usuario + ' ha abandonado la sala: ' + room + '!', 'chat':room}, to=room, include_self=True)
+    emit('chatDesconectado', {'msg': 'El usuario: ' + usuario + ' ha abandonado la sala: ' + room + '!', 'chat':room}, room=room)
 
 @socketio.on("saludo")
 def saludar(dato):

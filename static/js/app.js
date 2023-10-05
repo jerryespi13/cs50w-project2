@@ -13,7 +13,7 @@ if(chatSeleccionadoLocalStorage){
     joinRoom(room)
     }
 }
-usuario = localStorage.getItem("usuario")
+let usuario = localStorage.getItem("usuario")
 // redirigimos a index al usuario que quiera entrar al enlace  de los chat
 // sin haberse registrado
 if(usuario === null){
@@ -23,6 +23,7 @@ if(usuario === null){
 // cerrar session
 function cerrarSesion(){
     socket.emit("cerrarSesion", {"usuario":usuario})
+    leaveRoom()
 }
 //limpiar local storage al cerrar session
 socket.on("sesionCerrada", function(dato){
@@ -97,7 +98,11 @@ listarSalas()
 // funcion para unirse a un chat o room
 function joinRoom(sala){
     let room = sala
-    socket.emit("join", {"room":room})
+    let usuario = localStorage.getItem("usuario")
+    if(localStorage.getItem("chatActivo")){
+        leaveRoom()
+    }
+    socket.emit("join", {"room":room, "usuario":usuario})
 }
 
 // uniendose a sala o chat
@@ -123,15 +128,13 @@ socket.on("chatConectado", function(dato){
     </div>`
 
     localStorage.chatActivo = dato["chat"]
-    document.querySelector("#"+dato["chat"]).removeAttribute("onclick")
 })
 
 function leaveRoom(){
-    let room = localStorage.getItem("chatActivo")
-    socket.emit('leave', { 'room': room, "usuario":usuario })
-    document.querySelector("#headerchat").style.visibility = "hidden"
-    document.querySelector("#chatInput").style.visibility = "hidden"
-    document.querySelector("#chats"+room).innerHTML=""
+    let sala = localStorage.getItem("chatActivo")
+    let usuario = localStorage.getItem("usuario")
+    console.log("dejando sala "+sala)
+    socket.emit('leave', { 'room': sala, "usuario":usuario })
 }
 
 socket.on("chatDesconectado", function(dato){
@@ -140,6 +143,7 @@ socket.on("chatDesconectado", function(dato){
     mensaje.innerHTML += `<div class="mensaje my_mensaje">
     <p>`+ dato["msg"] +`<br><span>12:16</span></p>
     </div>`
+    //document.querySelector("#rigthSide").style.visibility = "hidden"
 
 })
 
@@ -156,7 +160,6 @@ socket.on("salaCreada", function(dato){
     listarSalas()
     // volvemos a la vista sala
     document.querySelector("#chats").checked = true
-    //joinRoom(dato["sala"])
 })
 
 // creacion de sala con enter
