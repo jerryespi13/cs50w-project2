@@ -123,8 +123,8 @@ socket.on("chatConectado", function(dato){
 
     // añadimos el mensaje de bienbenida
     var mensaje = document.querySelector("#chats"+dato["chat"]);
-    mensaje.innerHTML += `<div class="mensaje my_mensaje">
-    <p>`+ dato["msg"] +`<br><span>12:16</span></p>
+    mensaje.innerHTML += `<div class="log">
+    <p>`+ dato["msg"] +`<br><span>`+dato["fecha"][1]+`</span></p>
     </div>`
 
     localStorage.chatActivo = dato["chat"]
@@ -138,11 +138,9 @@ function leaveRoom(){
 
 socket.on("chatDesconectado", function(dato){
     var mensaje = document.querySelector("#chats"+dato["chat"]);
-    mensaje.innerHTML += `<div class="mensaje my_mensaje">
-    <p>`+ dato["msg"] +`<br><span>12:16</span></p>
+    mensaje.innerHTML += `<div class="log">
+    <p>`+ dato["msg"] +`<br><span>`+dato["fecha"][1]+`</span></p>
     </div>`
-    //document.querySelector("#rigthSide").style.visibility = "hidden"
-
 })
 
 function sendMenssage(){

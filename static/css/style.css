@@ -628,3 +628,15 @@ body{
     flex-direction: column;
     cursor: pointer;
 }
+
+.log{
+    position: relative;
+    width: 50%;
+    margin-left: 25%;
+    text-align: center;
+    align-items: center;
+    background: #51585c;
+    border-radius: 10px;
+    color: #dcf8c6;
+    margin-top: 5px;
+}
