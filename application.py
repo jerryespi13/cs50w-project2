@@ -26,19 +26,11 @@ fecha = datetime.now().strftime("%d-%m-%Y %H:%M").split(" ")
 
 # chat por defecto
 chats['general'] = [
-                    {"nombre_sala": "General"},
-                    {"mensajes":  [["Bienvenido al chat general",fecha]]},
-                    #{"usuarios": []},
+                    {"nombre_sala": "general"},
+                    {"mensajes":  [["Bienvenido al chat general",fecha, "user"]]},
+                    {"usuarios": []},
                     {"numero_mensajes":""},
-                    {"creada":[]}
-                    ]
-
-chats['jerry'] = [
-                    {"nombre_sala": "Jerry"},
-                    {"mensajes":  [["Bienvenido al chat Jerry",fecha]]},
-                    #{"usuarios": []},
-                    {"numero_mensajes":""},
-                    {"creada":[]}
+                    {"creada": "Sala creada por defecto"}
                     ]
 
 # ruta index
@@ -78,6 +70,7 @@ def conectarUsuario(dato):
     usuarios.append(usuario)
     emit("usuarioConectado", {"usuario": usuario})
 
+# crear nueva sala
 @socketio.on("crearSala")
 def crearSala(dato):
     sala = dato["sala"]
@@ -88,34 +81,31 @@ def crearSala(dato):
                     {"mensajes":  []},
                     {"usuarios": []},
                     {"numero_mensajes":""},
-                    {"creada":[f"Sala {sala} creada el {fecha[0]} {fecha[1]} por {usuario}"]}
+                    {"creada": f"Sala {sala} creada el {fecha[0]} {fecha[1]} por {usuario}"}
                     ]
     numero_mensajes = len(chats[sala][1]["mensajes"])
     chats[sala][3]["numero_mensajes"] = numero_mensajes
-    print(chats[sala][3])
-    print(chats[sala])
     emit("salaCreada",{"sala":sala}, broadcast=True)
 
+# unirse a una sala
 @socketio.on('join')
 def on_join(data):
     fecha = datetime.now().strftime("%d-%m-%Y %H:%M").split(" ")
     room = data['room']
     usuario = data["usuario"]
+    chats[room][2]["usuarios"].append(usuario)
     join_room(room)
     emit("chatConectado", {'msg': usuario + ' ha ingresado a la sala', "chat":room, "fecha":fecha}, to=room)
 
+# dejar una sala
 @socketio.on('leave')
 def on_leave(data):
     fecha = datetime.now().strftime("%d-%m-%Y %H:%M").split(" ")
     usuario = data["usuario"]
     room = data['room']
+    chats[room][2]["usuarios"].remove(usuario)
     leave_room(room)
     emit('chatDesconectado', {'msg': usuario + ' ha abandonado la sala', 'chat':room, "fecha":fecha}, room=room)
-
-@socketio.on("saludo")
-def saludar(dato):
-    print(dato["nombre"])
-    emit("saludoRecibido", {"mensaje": dato["mensaje"], "nombre":dato["nombre"]}, broadcast=True, include_self=False)
 
 # listamos cada chat existente
 @socketio.on("get_room_list")
@@ -135,10 +125,13 @@ def cerrarSesion(dato):
     emit("sesionCerrada",{"mensaje":"sesion cerrada"})
     usuarios.remove(dato["usuario"])
 
+# envio de mensajes
 @socketio.on("mensaje")
 def obtener_mensaje(dato):
     fecha = datetime.now().strftime("%d-%m-%Y %H:%M").split(" ")
     room = dato["sala"]
     message = dato["mensaje"]
     usuario = dato["usuario"]
+    mensaje = [message, fecha, usuario]
+    chats[room][1]["mensajes"].append(mensaje)
     emit("mensajeRecibido", {"mensaje":message, "chat":room, "fecha":fecha, "usuario":usuario}, room=room, broadcast=True)
