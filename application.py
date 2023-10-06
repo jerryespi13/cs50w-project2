@@ -28,15 +28,17 @@ fecha = datetime.now().strftime("%d-%m-%Y %H:%M").split(" ")
 chats['general'] = [
                     {"nombre_sala": "General"},
                     {"mensajes":  [["Bienvenido al chat general",fecha]]},
-                    {"usuarios": []},
-                    {"numero_mensajes":""}
+                    #{"usuarios": []},
+                    {"numero_mensajes":""},
+                    {"creada":[]}
                     ]
 
 chats['jerry'] = [
                     {"nombre_sala": "Jerry"},
                     {"mensajes":  [["Bienvenido al chat Jerry",fecha]]},
-                    {"usuarios": []},
-                    {"numero_mensajes":""}
+                    #{"usuarios": []},
+                    {"numero_mensajes":""},
+                    {"creada":[]}
                     ]
 
 # ruta index
@@ -79,13 +81,19 @@ def conectarUsuario(dato):
 @socketio.on("crearSala")
 def crearSala(dato):
     sala = dato["sala"]
+    usuario = dato["usuario"]
     fecha = datetime.now().strftime("%d-%m-%Y %H:%M").split(" ")
     chats[sala] = [
                     {"nombre_sala": sala},
-                    {"mensajes":  [[f"Sala {sala} creada el {fecha[0]} {fecha[1]}",fecha]]},
+                    {"mensajes":  []},
                     {"usuarios": []},
-                    {"numero_mensajes":""}
+                    {"numero_mensajes":""},
+                    {"creada":[f"Sala {sala} creada el {fecha[0]} {fecha[1]} por {usuario}"]}
                     ]
+    numero_mensajes = len(chats[sala][1]["mensajes"])
+    chats[sala][3]["numero_mensajes"] = numero_mensajes
+    print(chats[sala][3])
+    print(chats[sala])
     emit("salaCreada",{"sala":sala}, broadcast=True)
 
 @socketio.on('join')
@@ -133,4 +141,4 @@ def obtener_mensaje(dato):
     room = dato["sala"]
     message = dato["mensaje"]
     usuario = dato["usuario"]
-    emit("mensajeRecibido", {"mensaje":message, "chat":room, "fecha":fecha, "usuario":usuario}, room=room)
+    emit("mensajeRecibido", {"mensaje":message, "chat":room, "fecha":fecha, "usuario":usuario}, room=room, broadcast=True)

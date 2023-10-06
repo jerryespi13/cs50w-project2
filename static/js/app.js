@@ -47,9 +47,9 @@ socket.on("room_list", function(dato){
         let fechaMostrar = ""
         let ultimoChat = room[3] - 1;
         // obtenemos la fecha del ultimo chat
-        let fechaUltimoChat = room[1]["mensajes"][ultimoChat][1][0]
+        let fechaUltimoChat = (ultimoChat === -1) ?  "" : room[1]["mensajes"][ultimoChat][1][0]
         // obtenemos la hora del ultimo chat
-        let horaUltimoChat = room[1]["mensajes"][ultimoChat][1][1]
+        let horaUltimoChat = (ultimoChat === -1) ? "" : room[1]["mensajes"][ultimoChat][1][1] 
         // variable donde guardamos la fecha actual, la cual compararemos con la fehca del ultimo mensaje
         let fechaActual =""
         // obtenemos la informacion de la fecha actual
@@ -70,24 +70,39 @@ socket.on("room_list", function(dato){
         }
         
         // html de cada chat
-        const htmlListadoChat = `<label for="radioChats`+room[0]["nombre_sala"]+`">
-        <div class="chat active" id="`+room[0]["nombre_sala"]+`" onclick="joinRoom('`+ room[0]["nombre_sala"] +`')">
-        <div class="imgChat">
-            <img src="/static/img/profile.png" alt="" class="cover">
-        </div>
-        <div class="detallesChat">
-            <div class="nombreChat">
-                <h4>`+ room[0]["nombre_sala"] +`</h4>
-                <!--fecha o hora-->
-                <p class="time">`+ fechaMostrar +`</p>
-            </div>
-        <div class="mensajeChat">
-            <p>`+ room[1]["mensajes"][ultimoChat][0] +`</p>
-        </div>
-    </div>
-                                </label>
-        
-        `
+        const htmlListadoChat = (ultimoChat === -1) ? `<label for="radioChats`+room[0]["nombre_sala"]+`">
+                                    <div class="chat active" id="`+room[0]["nombre_sala"]+`" onclick="joinRoom('`+ room[0]["nombre_sala"] +`')">
+                                        <div class="imgChat">
+                                            <img src="/static/img/profile.png" alt="" class="cover">
+                                        </div>
+                                        <div class="detallesChat">
+                                            <div class="nombreChat">
+                                                <h4>`+ room[0]["nombre_sala"] +`</h4>
+                                                <!--fecha o hora-->
+                                                <p class="time" id="fechaUltimoMensaje`+room[0]["nombre_sala"]+`">`+ fechaMostrar +`</p>
+                                            </div>
+                                        <div class="mensajeChat">
+                                            <p id="ultimoMensaje`+room[0]["nombre_sala"]+`"></p>
+                                        </div>
+                                    </div>
+                                </label>`
+                                :
+                                `<label for="radioChats`+room[0]["nombre_sala"]+`">
+                                    <div class="chat active" id="`+room[0]["nombre_sala"]+`" onclick="joinRoom('`+ room[0]["nombre_sala"] +`')">
+                                        <div class="imgChat">
+                                            <img src="/static/img/profile.png" alt="" class="cover">
+                                        </div>
+                                        <div class="detallesChat">
+                                            <div class="nombreChat">
+                                                <h4>`+ room[0]["nombre_sala"] +`</h4>
+                                                <!--fecha o hora-->
+                                                <p class="time" id="fechaUltimoMensaje`+room[0]["nombre_sala"]+`">`+ fechaMostrar +`</p>
+                                            </div>
+                                        <div class="mensajeChat">
+                                            <p id="ultimoMensaje`+room[0]["nombre_sala"]+`">`+ room[1]["mensajes"][ultimoChat][0] +`</p>
+                                        </div>
+                                    </div>
+                                </label>`
         // introducimos cada chat listado al html
         listaChat.innerHTML+=htmlListadoChat;
     });
@@ -120,6 +135,8 @@ socket.on("chatConectado", function(dato){
                             <div class="chatBox" style="display: none;" id="chats`+dato["chat"]+`"></div>`
                         }
                         
+    
+  
 
     // añadimos el mensaje de bienbenida
     var mensaje = document.querySelector("#chats"+dato["chat"]);
@@ -128,6 +145,7 @@ socket.on("chatConectado", function(dato){
     </div>`
     mensaje.style.display = "block"
     localStorage.chatActivo = dato["chat"]
+    document.querySelector("#mensaje").focus()
 })
 
 function leaveRoom(){
@@ -166,7 +184,12 @@ function sendMenssage(){
 // recibiendo el mensaje
 socket.on("mensajeRecibido", function(dato){
     let mensaje = document.querySelector("#chats"+dato["chat"])
-    console.log(dato["usuario"])
+
+    // Actualizamos el chat del chat en la lista chats (leftSide)
+    const ultimoMensaje = document.querySelector("#ultimoMensaje"+dato["chat"])
+    const fechaUltimoMensaje = document.querySelector("#fechaUltimoMensaje"+dato["chat"])
+    ultimoMensaje.innerHTML = dato["mensaje"]
+    fechaUltimoMensaje.innerHTML = dato["fecha"][1]
 
     // los mensajes propios los ponemos a la derecha
     if(dato["usuario"]===localStorage.getItem("usuario")){
@@ -186,7 +209,8 @@ socket.on("mensajeRecibido", function(dato){
 // creacion de sala
 function crearSala(){
     nombreSala = document.querySelector("#nombreSala").value
-    socket.emit("crearSala", {"sala":nombreSala})
+    usuario = localStorage.getItem("usuario")
+    socket.emit("crearSala", {"sala":nombreSala, "usuario":usuario})
 }
 
 socket.on("salaCreada", function(dato){
