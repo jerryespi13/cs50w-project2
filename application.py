@@ -27,7 +27,6 @@ chats['general'] = [
                     {"nombre_sala": "general"},
                     {"mensajes":  []},
                     {"usuarios": []},
-                    {"numero_mensajes":""},
                     {"creada": "Sala creada por defecto"}
                     ]
 
@@ -90,11 +89,8 @@ def crearSala(dato):
                     {"nombre_sala": sala},
                     {"mensajes":  []},
                     {"usuarios": []},
-                    {"numero_mensajes":""},
                     {"creada": f"Sala {sala} creada el {fecha[0]} {fecha[1]} por {usuario}"}
                     ]
-    numero_mensajes = len(chats[sala][1]["mensajes"])
-    chats[sala][3]["numero_mensajes"] = numero_mensajes
     emit("salaCreada",{"sala":sala}, broadcast=True)
 
 # unirse a una sala
@@ -144,5 +140,8 @@ def obtener_mensaje(dato):
     message = dato["mensaje"]
     usuario = dato["usuario"]
     mensaje = [message, fecha, usuario]
+    # nos aseguramos que el chat solo guarde 100 mensajes
+    if len(chats[room][1]["mensajes"]) > 99:
+        chats[room][1]["mensajes"].pop(0)
     chats[room][1]["mensajes"].append(mensaje)
     emit("mensajeRecibido", {"mensaje":message, "chat":room, "fecha":fecha, "usuario":usuario}, room=room, broadcast=True)
