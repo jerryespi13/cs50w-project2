@@ -273,6 +273,21 @@ input2.addEventListener('keyup', function(event) {
   }
 })
 
+// mensaje de que la sala o chat ya existe
+socket.on("chatExiste",function(dato){
+    alert("La sala que intentas crear ya existe")
+})
+
+// mensaje de nombre de chat vacio
+socket.on("nombreChatVacio",function(dato){
+    alert("Ingresa un nombre para la sala")
+})
+
+// mensaje de nombre de chat invalido
+socket.on("nombreInvalido",function(dato){
+    alert("Nombre invalido, borra los espacios")
+})
+
 // funcion para editar el nombre de usuario
 function editarConfirmar(x){
     x.classList.toggle("fa-check");

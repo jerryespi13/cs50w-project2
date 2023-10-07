@@ -72,6 +72,18 @@ def conectarUsuario(dato):
 @socketio.on("crearSala")
 def crearSala(dato):
     sala = dato["sala"]
+    # validamos que se haya escrito un nombre para la sala
+    if sala.isspace() or len(sala) ==0:
+        emit("nombreChatVacio",{"chat":sala})
+        return
+    # validamos que el nombre de la sala no tenga espacios
+    elif " " in sala:
+        emit("nombreInvalido",{"chat":sala})
+        return
+    # validamos que la sala no exista
+    elif sala in chats:
+        emit("chatExiste",{"chat":sala})
+        return
     usuario = dato["usuario"]
     fecha = datetime.now().strftime("%d-%m-%Y %H:%M").split(" ")
     chats[sala] = [
