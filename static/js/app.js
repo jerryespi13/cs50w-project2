@@ -170,6 +170,9 @@ socket.on("chatConectado", function(dato){
     localStorage.chatActivo = dato["chat"]
     // automaticamente ponemos el cursor en el input donde se escriben los mensajes
     document.querySelector("#mensaje").focus()
+
+    // autoscroll al ultimo mensaje enviado
+    mensaje.lastChild.scrollIntoView()
 })
 
 // Funcion para abandonar chat
@@ -196,6 +199,9 @@ socket.on("chatDesconectado", function(dato){
     mensaje.innerHTML +=    `<div class="log">
                                 <p>`+ dato["msg"] +`<br><span>`+dato["fecha"][1]+`</span></p>
                             </div>`
+
+    // autoscroll al ultimo mensaje enviado
+    mensaje.lastChild.scrollIntoView()
 })
 
 // funcion para mandar mensajes
@@ -233,6 +239,8 @@ socket.on("mensajeRecibido", function(dato){
                                 </div>`
     }
     
+    // autoscroll al ultimo mensaje enviado
+    mensaje.lastChild.scrollIntoView({ behavior: "smooth"})
 })
 
 // creacion de sala
