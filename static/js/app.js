@@ -1,18 +1,4 @@
-const socket = io();
-
-//agragamos algunos estilos a ciertos elementos en el DOM
-usuarioDefault = document.querySelector("#nombreusuariodefault")
-nombreUsuario = document.querySelector("#nombreusuario")
-usuarioDefault.style.visibility = "visible"
-nombreUsuario.style.visibility = "hidden"
-
-if(localStorage.getItem("chatActivo")){
-let chatSeleccionadoLocalStorage = localStorage.getItem("chatActivo")
-if(chatSeleccionadoLocalStorage){
-    let room = chatSeleccionadoLocalStorage
-    joinRoom(room)
-    }
-}
+// Usuario
 let usuario = localStorage.getItem("usuario")
 // redirigimos a index al usuario que quiera entrar al enlace  de los chat
 // sin haberse registrado
@@ -20,13 +6,29 @@ if(usuario === null){
     window.location.href="/"
   }
 
+//agragamos algunos estilos a ciertos elementos en el DOM
+usuarioDefault = document.querySelector("#nombreusuariodefault")
+nombreUsuario = document.querySelector("#nombreusuario")
+usuarioDefault.style.visibility = "visible"
+nombreUsuario.style.visibility = "hidden"
+
+const socket = io();
+
+// Recordando sala del usuario
+// si existe una sala en el localstorage, se une directamente a esa sala al cargar la pagina
+if(localStorage.getItem("chatActivo")){
+    joinRoom(localStorage.getItem("chatActivo"))
+}
+
+
 // cerrar session
 function cerrarSesion(){
     socket.emit("cerrarSesion", {"usuario":usuario})
+    // al cerrar sesion tambien se abandona la sala
     leaveRoom()
 }
-//limpiar local storage al cerrar session
 socket.on("sesionCerrada", function(dato){
+    //limpiar local storage al cerrar session
     localStorage.clear()
     // redirijimos a index
     window.location.href="/"
@@ -69,7 +71,7 @@ socket.on("room_list", function(dato){
             fechaMostrar = fechaUltimoChat
         }
         
-        // html de cada chat
+        // html de cada chat (leftside)
         const htmlListadoChat = (ultimoChat === -1) ? `<label for="radioChats`+room[0]["nombre_sala"]+`">
                                     <div class="chat active" id="`+room[0]["nombre_sala"]+`" onclick="joinRoom('`+ room[0]["nombre_sala"] +`')">
                                         <div class="imgChat">
@@ -115,6 +117,7 @@ function joinRoom(sala){
     let room = sala
     let usuario = localStorage.getItem("usuario")
     if(localStorage.getItem("chatActivo")){
+        // al unirse a otra sala primero se abandona la actual
         leaveRoom()
     }
     socket.emit("join", {"room":room, "usuario":usuario})
@@ -122,7 +125,7 @@ function joinRoom(sala){
 
 // uniendose a sala o chat
 socket.on("chatConectado", function(dato){
-    //nombre del chat o sala
+    //nombre del chat o sala en rigthSide
     document.querySelector("#headerchat").style.visibility = "visible"
     document.querySelector("#nombreChat").innerHTML = dato["chat"] + ` <br><span>online</span>`
     document.querySelector("#chatInput").style.visibility = "visible"
@@ -136,37 +139,63 @@ socket.on("chatConectado", function(dato){
                         }
                         
     
-  
-
-    // añadimos el mensaje de bienbenida
+    // mostramos los chat en la sala
     var mensaje = document.querySelector("#chats"+dato["chat"]);
-    mensaje.innerHTML += `<div class="log">
-    <p>`+ dato["msg"] +`<br><span>`+dato["fecha"][1]+`</span></p>
-    </div>`
+    mensaje.innerHTML=""
+    // se pinta cada mensaje del chat
+    dato.mensajes.forEach(mensajeEnMemoria=> {
+
+    // los mensajes propios los ponemos a la derecha
+    if(mensajeEnMemoria[2]===localStorage.getItem("usuario")){
+        mensaje.innerHTML +=   `<div class="mensaje my_mensaje">
+                                    <p>`+ mensajeEnMemoria[0] +`<br><span>`+mensajeEnMemoria[1][1]+`</span></p>
+                                </div>`
+    }
+
+    // los de mas a la izquierda
+    else{
+        mensaje.innerHTML +=   `<div class="mensaje friend_mensaje">
+                                    <p><span>`+mensajeEnMemoria[2]+`</span><br>`+ mensajeEnMemoria[0] +`<br><span>`+mensajeEnMemoria[1][1]+`</span></p>
+                                </div>`
+    }
+
+    })
+
+    // añadimos el mensaje de bienvenida
+    mensaje.innerHTML +=    `<div class="log">
+                                <p>`+ dato["msg"] +`<br><span>`+dato["fecha"][1]+`</span></p>
+                            </div>`
     mensaje.style.display = "block"
+    // actualizamos el chat en localStorage
     localStorage.chatActivo = dato["chat"]
+    // automaticamente ponemos el cursor en el input donde se escriben los mensajes
     document.querySelector("#mensaje").focus()
 })
 
+// Funcion para abandonar chat
 function leaveRoom(){
     let sala = localStorage.getItem("chatActivo")
     let usuario = localStorage.getItem("usuario")
     let mensaje = document.querySelector("#chats"+sala)
+    // Eliminamos la variable chatActivo en localStorage
     localStorage.removeItem('chatActivo');
+    // limpiamos ciertas cosasa en la pantalla
     if(mensaje){
         mensaje.style.display = "none"
         document.querySelector("#headerchat").style.visibility = "hidden"
         document.querySelector("#chatInput").style.visibility = "hidden"
+        document.querySelector("#ultimoMensaje"+sala).innerHTML =""
+        document.querySelector("#fechaUltimoMensaje"+sala).innerHTML=""
     }
-
     socket.emit('leave', { 'room': sala, "usuario":usuario })
 }
 
+// informamos que usuario ha abandonado el chat
 socket.on("chatDesconectado", function(dato){
     var mensaje = document.querySelector("#chats"+dato["chat"]);
-    mensaje.innerHTML += `<div class="log">
-    <p>`+ dato["msg"] +`<br><span>`+dato["fecha"][1]+`</span></p>
-    </div>`
+    mensaje.innerHTML +=    `<div class="log">
+                                <p>`+ dato["msg"] +`<br><span>`+dato["fecha"][1]+`</span></p>
+                            </div>`
 })
 
 // funcion para mandar mensajes
@@ -193,15 +222,15 @@ socket.on("mensajeRecibido", function(dato){
 
     // los mensajes propios los ponemos a la derecha
     if(dato["usuario"]===localStorage.getItem("usuario")){
-        mensaje.innerHTML += `<div class="mensaje my_mensaje">
-        <p>`+ dato["mensaje"] +`<br><span>`+dato["fecha"][1]+`</span></p>
-        </div>`
+        mensaje.innerHTML +=    `<div class="mensaje my_mensaje">
+                                    <p>`+ dato["mensaje"] +`<br><span>`+dato["fecha"][1]+`</span></p>
+                                </div>`
     }
     // los de mas a la izquierda
     else{
-        mensaje.innerHTML += `<div class="mensaje friend_mensaje">
-       <p><span>`+dato["usuario"]+`</span><br>`+ dato["mensaje"] +`<br><span>`+dato["fecha"][1]+`</span></p>
-       </div>`
+        mensaje.innerHTML +=    `<div class="mensaje friend_mensaje">
+                                    <p><span>`+dato["usuario"]+`</span><br>`+ dato["mensaje"] +`<br><span>`+dato["fecha"][1]+`</span></p>
+                                </div>`
     }
     
 })
@@ -222,23 +251,26 @@ socket.on("salaCreada", function(dato){
     document.querySelector("#chats").checked = true
 })
 
-// creacion de sala con enter
-function enter(event) {
-    // Número 13 es la tecla 'Enter'
-    if (event.keyCode === 13) {
-      crearSala()
-    }
+/* para manejo del enter en dependencia del input */
+
+// Obtén los elementos input por su ID
+var input1 = document.getElementById('nombreSala');
+var input2 = document.getElementById('mensaje');
+
+// Agrega el controlador de eventos al input donde se escribe el nombre de la sala
+input1.addEventListener('keyup', function(event) {
+    // si se presiona enter se ejectua la funcion
+  if (event.key === 'Enter') {
+    crearSala()
   }
+})
 
-function enviarSaludo(){
-    let nombre = document.querySelector("#nombre").value
-    let mensaje = document.querySelector("#mensaje").value
-
-        socket.emit("saludo", {"nombre": nombre, "mensaje":mensaje})
-}
-
-socket.on("saludoRecibido", function(dato){
-    alert(dato.nombre + "dice: " + dato.mensaje)
+// Agrega el controlador de eventos al input donde se escribe el mensaje a enviar
+input2.addEventListener('keyup', function(event) {
+    // si se presiona enter se ejectua la funcion
+  if (event.key === 'Enter') {
+    sendMenssage()
+  }
 })
 
 // funcion para editar el nombre de usuario

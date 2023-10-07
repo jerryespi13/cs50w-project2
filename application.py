@@ -22,12 +22,10 @@ usuarios=list()
 # variable donde se guardan las salas
 chats = dict()
 
-fecha = datetime.now().strftime("%d-%m-%Y %H:%M").split(" ")
-
 # chat por defecto
 chats['general'] = [
                     {"nombre_sala": "general"},
-                    {"mensajes":  [["Bienvenido al chat general",fecha, "user"]]},
+                    {"mensajes":  []},
                     {"usuarios": []},
                     {"numero_mensajes":""},
                     {"creada": "Sala creada por defecto"}
@@ -94,8 +92,9 @@ def on_join(data):
     room = data['room']
     usuario = data["usuario"]
     chats[room][2]["usuarios"].append(usuario)
+    mensajes = chats[room][1]["mensajes"]
     join_room(room)
-    emit("chatConectado", {'msg': usuario + ' ha ingresado a la sala', "chat":room, "fecha":fecha}, to=room)
+    emit("chatConectado", {'msg': usuario + ' ha ingresado a la sala', "chat":room, "fecha":fecha, "mensajes":mensajes}, to=room)
 
 # dejar una sala
 @socketio.on('leave')
