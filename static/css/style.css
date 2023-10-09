@@ -647,6 +647,7 @@ body{
 
 @media screen and (max-width: 768px) {
 
+  
     .containerInicio .txtInicio{
         height: 300px;
         display: flex;
@@ -694,8 +695,5 @@ body{
         position: absolute;
         right: 0;
         top: 10px;
-        display: flex;
-        flex-direction: column;
-        cursor: pointer;
     }
 }
