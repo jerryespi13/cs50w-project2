@@ -644,3 +644,58 @@ body{
 .radioChat{
     display: none;
 }
+
+@media screen and (max-width: 768px) {
+
+    .containerInicio .txtInicio{
+        height: 300px;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+    }
+
+    .txtInicio h1{
+        font-size: 2em;
+    }
+    
+    .txtInicio p{
+        display: none;
+    
+    }
+    .formularioUsuario input{
+        width: 80%;
+    }
+
+    .formularioUsuario span{
+        position: absolute;
+        top: 5%;
+        left: 12%;
+    }
+
+    .formularioUsuario button{
+        width: 80%;
+        
+    }
+
+    .formularioUsuario .alert{
+        width: 80%;
+    }
+
+    .container .leftSide{
+        flex: 100%;
+    }
+    
+    .container .rigthSide{
+        flex: 100%;
+        display: none;
+    }
+
+    #dropdown:hover .dropdown-content{
+        position: absolute;
+        right: 0;
+        top: 10px;
+        display: flex;
+        flex-direction: column;
+        cursor: pointer;
+    }
+}

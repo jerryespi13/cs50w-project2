@@ -6,11 +6,42 @@ if(usuario === null){
     window.location.href="/"
   }
 
-//agragamos algunos estilos a ciertos elementos en el DOM
-usuarioDefault = document.querySelector("#nombreusuariodefault")
-nombreUsuario = document.querySelector("#nombreusuario")
-usuarioDefault.style.visibility = "visible"
-nombreUsuario.style.visibility = "hidden"
+  
+  //agragamos algunos estilos a ciertos elementos en el DOM
+  usuarioDefault = document.querySelector("#nombreusuariodefault")
+  nombreUsuario = document.querySelector("#nombreusuario")
+  usuarioDefault.style.visibility = "visible"
+  nombreUsuario.style.visibility = "hidden"
+  
+// ajuste automatico de pantalla
+let checkChat = false
+window.addEventListener('resize', function() {
+    // obtenemos el ancho de la pantalla
+    var width = window.innerWidth;
+  
+    var leftSide = document.querySelector('.leftSide');
+    var rightSide = document.querySelector('.rigthSide');
+  
+    // si la pantalla es menor o igual de 768
+    if (width <= 768 ) {
+        // y se presiono un chat entonces se muestra en toda la pantalla la seccion chat
+        if(checkChat){
+            leftSide.style.display = "none"
+            rightSide.style.display = "block"
+        }
+        else{
+            // si no se ha ingresado a ningun chat entonces se muestra en la pantalla 
+            // la lista de los chats disponible
+            leftSide.style.display = "block"
+            rightSide.style.display = "none"
+        }
+
+    } else {
+      // Aplica los estilos para pantallas grandes
+      leftSide.style.display = "blok"
+      rightSide.style.display = "block"
+    }
+  });
 
 const socket = io();
 
@@ -121,6 +152,20 @@ function joinRoom(sala){
         leaveRoom()
     }
     socket.emit("join", {"room":room, "usuario":usuario})
+
+    // obtenemos el tamaño de la pantalla para en dependencia de ese valor saber que mostrar
+    let width = window.innerWidth
+    checkChat = true
+    // si el ancho es menor que 768px se muestra en pantalla completa el chat seleccionado
+    if(width <= 768){
+        document.querySelector(".container .leftSide").style.display = "none"
+        document.querySelector(".container .rigthSide").style.display = "block"
+    }
+    // si no, se muestra como esta definido para dispositivos de tamaños de pantallas mas grandes
+    else{
+        document.querySelector(".container .leftSide").style.display = "block"
+        document.querySelector(".container .rigthSide").style.display = "block"
+    }
 }
 
 // uniendose a sala o chat
@@ -172,7 +217,7 @@ socket.on("chatConectado", function(dato){
     document.querySelector("#mensaje").focus()
 
     // autoscroll al ultimo mensaje enviado
-    mensaje.lastChild.scrollIntoView()
+    mensaje.lastChild.scrollIntoView(false)
 })
 
 // Funcion para abandonar chat
@@ -191,6 +236,20 @@ function leaveRoom(){
         document.querySelector("#fechaUltimoMensaje"+sala).innerHTML=""
     }
     socket.emit('leave', { 'room': sala, "usuario":usuario })
+
+    // obtenemos el ancho de pantalla
+    let width = window.innerWidth
+    checkChat = false
+    // si es tamaño de dispositivo movil entonces se muestra en pantalla completa la lista de los chats
+    if(width <= 768){
+        document.querySelector(".container .leftSide").style.display = "block"
+        document.querySelector(".container .rigthSide").style.display = "none"
+    }
+    // si no, se muestra para dispositivo con pantallas mas grandes
+    else{
+        document.querySelector(".container .leftSide").style.display = "block"
+        document.querySelector(".container .rigthSide").style.display = "block"
+    }
 }
 
 // informamos que usuario ha abandonado el chat
@@ -201,7 +260,7 @@ socket.on("chatDesconectado", function(dato){
                             </div>`
 
     // autoscroll al ultimo mensaje enviado
-    mensaje.lastChild.scrollIntoView()
+    mensaje.lastChild.scrollIntoView(false)
 })
 
 // funcion para mandar mensajes
@@ -240,7 +299,7 @@ socket.on("mensajeRecibido", function(dato){
     }
     
     // autoscroll al ultimo mensaje enviado
-    mensaje.lastChild.scrollIntoView({ behavior: "smooth"})
+    mensaje.lastChild.scrollIntoView(true, { behavior: "smooth"})
 })
 
 // creacion de sala
