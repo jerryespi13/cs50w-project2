@@ -696,4 +696,9 @@ body{
         right: 0;
         top: 10px;
     }
+
+    .listaMensajes{
+        padding-left: 20px;
+        padding-right: 20px;
+    }
 }
