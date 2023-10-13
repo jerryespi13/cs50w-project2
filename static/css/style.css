@@ -473,6 +473,10 @@ body{
     font-size: 1em;
 }
 
+#attach{
+    display: none;
+}
+
 .containerInicio{
     position: relative;
     width: 1296px;

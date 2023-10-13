@@ -5,6 +5,9 @@ from flask_socketio import SocketIO, emit, join_room, leave_room
 # para manejo de tiempo
 from datetime import datetime
 
+# para trabajar con datos en base64
+from base64 import b64decode
+
 # para trabajar con variables de entorno desde el archivo .
 from dotenv import load_dotenv
 
@@ -145,3 +148,29 @@ def obtener_mensaje(dato):
         chats[room][1]["mensajes"].pop(0)
     chats[room][1]["mensajes"].append(mensaje)
     emit("mensajeRecibido", {"mensaje":message, "chat":room, "fecha":fecha, "usuario":usuario}, room=room, broadcast=True)
+
+# envio de imagen
+@socketio.on("imagen")
+def obtenerImagen(dato):
+    fecha = datetime.now().strftime("%d-%m-%Y %H:%M").split(" ")
+    room = dato["room"]
+    usuario = dato["usuario"]
+    # obtenemos la imagen
+    imagen = dato["imagen"]
+    # obtenemos el binario de la imagen
+    image_binary = b64decode(imagen.split(',')[1])
+    # creamos un nombre para la imagen
+    nombre_imagen = room +  '_' + usuario + '_' + datetime.now().strftime("%d-%m-%Y%H-%M-%S")
+    print(nombre_imagen)
+    # guardamos la imagen en la carpeta uploads
+    try:
+        with open('static/uploads/' + nombre_imagen +'.png', 'wb') as image_file:
+            image_file.write(image_binary)
+    except Exception as e:
+        print(f"Error al guardar la imagen: {str(e)}")
+    mensaje = [nombre_imagen,fecha,usuario]
+    # nos aseguramos que el chat solo guarde 100 mensajes
+    if len(chats[room][1]["mensajes"]) > 99:
+        chats[room][1]["mensajes"].pop(0)
+    chats[room][1]["mensajes"].append(mensaje)
+    emit("imagenRecibida", {"mensaje":imagen, "chat":room, "fecha":fecha, "usuario":usuario}, room=room, broadcast=True)

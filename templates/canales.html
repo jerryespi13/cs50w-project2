@@ -90,10 +90,12 @@ Chatea
             <!--   Chat input   -->
             <div class="chatbox_input" id="chatInput">
                 <i class="fa-regular fa-face-laugh"></i>
-                <i class="fa-solid fa-paperclip"></i>
+                <i class="fa-solid fa-paperclip" onclick="subirArchivo()"></i>
+                <!--   input para imagenes-->
+                <input type="file" name="attach" id="attach">
+                <!--   input para mensajes-->
                 <input type="text" name="mensaje" id="mensaje" placeholder="Escribe un mensaje">
                 <i onclick="sendMenssage()" class="fa-solid fa-paper-plane"></i>
-
             </div>
         </aside>
     </main>

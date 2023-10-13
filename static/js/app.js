@@ -192,16 +192,39 @@ socket.on("chatConectado", function(dato){
 
     // los mensajes propios los ponemos a la derecha
     if(mensajeEnMemoria[2]===localStorage.getItem("usuario")){
-        mensaje.innerHTML +=   `<div class="mensaje my_mensaje">
-                                    <p>`+ mensajeEnMemoria[0] +`<br><span>`+mensajeEnMemoria[1][1]+`</span></p>
+        // si es imagen
+        if ( mensajeEnMemoria[0].includes(dato["chat"])+"_"){
+            mensaje.innerHTML +=    `<div class="mensaje my_mensaje">
+                                    <p><span>`+mensajeEnMemoria[1][1]+`</span>
+                                    <img src="static/uploads/`+mensajeEnMemoria[0]+`.png" alt="" style="width: 100%; objec-fit: cover; border-radius: 5px;">
+                                    </p>
                                 </div>`
+        }
+        // si es mensaje normal
+        else{
+            mensaje.innerHTML +=   `<div class="mensaje my_mensaje">
+            <p>`+ mensajeEnMemoria[0] +`<br><span>`+mensajeEnMemoria[1][1]+`</span></p>
+            </div>`
+        }
     }
 
     // los de mas a la izquierda
     else{
-        mensaje.innerHTML +=   `<div class="mensaje friend_mensaje">
-                                    <p><span>`+mensajeEnMemoria[2]+`</span><br>`+ mensajeEnMemoria[0] +`<br><span>`+mensajeEnMemoria[1][1]+`</span></p>
+        // si es una imagen
+        if ( mensajeEnMemoria[0].includes(dato["chat"]+"_")){
+            mensaje.innerHTML +=    `<div class="mensaje friend_mensaje">
+                                    <p><span>`+mensajeEnMemoria[2]+`</span><span>`+mensajeEnMemoria[1][1]+`</span>
+                                    <img src="static/uploads/`+mensajeEnMemoria[0]+`.png" alt="" style="width: 100%; border-radius: 5px;">
+                                    </p>
                                 </div>`
+        }
+        // si es mensaje normal
+        else{
+
+            mensaje.innerHTML +=   `<div class="mensaje friend_mensaje">
+            <p><span>`+mensajeEnMemoria[2]+`</span><br>`+ mensajeEnMemoria[0] +`<br><span>`+mensajeEnMemoria[1][1]+`</span></p>
+            </div>`
+        }
     }
 
     })
@@ -373,3 +396,64 @@ function editarConfirmar(x){
     
 }
 document.querySelector("#nombreusuariodefault").innerHTML = usuario
+
+// enviar archivo
+function subirArchivo(){
+    // input donde se suben las imagenes
+    let imageInput = document.querySelector("#attach")
+    // no se le da click directamente al input si no a un icono
+    // al darle click al icono, hacemos click con JS al input
+    imageInput.click()
+
+    // validamos si tiene el listener y hacemos que solo se agregue una vez
+    if (imageInput.dataset.listener !== 'true'){
+
+    imageInput.addEventListener("change", (e) =>{
+        // obtenemos el archivo
+        let file = imageInput.files[0]
+        // creamos un lector
+        let reader = new FileReader()
+        reader.addEventListener("load",()=>{
+            // obtenemos la sala
+            let room = localStorage.getItem("chatActivo")
+            // obtenemos el usuario
+            let user = localStorage.getItem("usuario")
+            // emitimos el evento con el usuario, la sala y el dato base64 de la imagen
+            socket.emit("imagen", {"room":room, "usuario":user, "imagen":reader.result})
+        })
+        reader.readAsDataURL(file)
+    })
+    
+    imageInput.dataset.listener = 'true'
+}
+}
+
+socket.on("imagenRecibida",function(dato){
+    let mensaje = document.querySelector("#chats"+dato["chat"])
+
+    // Actualizamos el chat del chat en la lista chats (leftSide)
+    const ultimoMensaje = document.querySelector("#ultimoMensaje"+dato["chat"])
+    const fechaUltimoMensaje = document.querySelector("#fechaUltimoMensaje"+dato["chat"])
+    //ultimoMensaje.innerHTML = dato["mensaje"]
+    fechaUltimoMensaje.innerHTML = dato["fecha"][1]
+
+    // los mensajes propios los ponemos a la derecha
+    if(dato["usuario"]===localStorage.getItem("usuario")){
+        mensaje.innerHTML +=    `<div class="mensaje my_mensaje">
+                                    <p><span>`+dato["fecha"][1]+`</span>
+                                    <img src="`+dato["mensaje"]+`" alt="" style="width: 100%; border-radius: 5px;">
+                                    </p>
+                                </div>`
+    }
+    // los de mas a la izquierda
+    else{
+        mensaje.innerHTML +=    `<div class="mensaje friend_mensaje">
+                                    <p><span>`+dato["usuario"]+`</span><span>`+dato["fecha"][1]+`</span>
+                                    <img src="`+dato["mensaje"]+`" alt="" style="width: 100%; border-radius: 5px;">
+                                    </p>
+                                </div>`
+    }
+    
+    // autoscroll al ultimo mensaje enviado
+    mensaje.lastChild.scrollIntoView(true, { behavior: "smooth"})
+})
