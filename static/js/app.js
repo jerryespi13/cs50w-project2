@@ -193,7 +193,7 @@ socket.on("chatConectado", function(dato){
     // los mensajes propios los ponemos a la derecha
     if(mensajeEnMemoria[2]===localStorage.getItem("usuario")){
         // si es imagen
-        if ( mensajeEnMemoria[0].includes(dato["chat"])+"_"){
+        if ( mensajeEnMemoria[0].includes(dato["chat"])){
             mensaje.innerHTML +=    `<div class="mensaje my_mensaje">
                                     <p><span>`+mensajeEnMemoria[1][1]+`</span>
                                     <img src="static/uploads/`+mensajeEnMemoria[0]+`.png" alt="" style="width: 100%; objec-fit: cover; border-radius: 5px;">
@@ -211,7 +211,7 @@ socket.on("chatConectado", function(dato){
     // los de mas a la izquierda
     else{
         // si es una imagen
-        if ( mensajeEnMemoria[0].includes(dato["chat"]+"_")){
+        if ( mensajeEnMemoria[0].includes(dato["chat"])){
             mensaje.innerHTML +=    `<div class="mensaje friend_mensaje">
                                     <p><span>`+mensajeEnMemoria[2]+`</span><span>`+mensajeEnMemoria[1][1]+`</span>
                                     <img src="static/uploads/`+mensajeEnMemoria[0]+`.png" alt="" style="width: 100%; border-radius: 5px;">
@@ -220,7 +220,7 @@ socket.on("chatConectado", function(dato){
         }
         // si es mensaje normal
         else{
-
+            console.log("es mensaje")
             mensaje.innerHTML +=   `<div class="mensaje friend_mensaje">
             <p><span>`+mensajeEnMemoria[2]+`</span><br>`+ mensajeEnMemoria[0] +`<br><span>`+mensajeEnMemoria[1][1]+`</span></p>
             </div>`
@@ -411,6 +411,13 @@ function subirArchivo(){
     imageInput.addEventListener("change", (e) =>{
         // obtenemos el archivo
         let file = imageInput.files[0]
+
+        // validamos que sea una imgen, tambien en el html
+        if (!file.type.startsWith('image/')) {
+            alert('Por favor, selecciona una imagen.');
+            e.target.value = '';
+            return
+        }
         // creamos un lector
         let reader = new FileReader()
         reader.addEventListener("load",()=>{
