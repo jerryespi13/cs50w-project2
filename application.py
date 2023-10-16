@@ -19,6 +19,10 @@ app.config["SECRET_KEY"] = os.getenv("SECRET_KEY")
 app.secret_key = b'_5#y2L"F4Q8z\n\xec]/'
 socketio = SocketIO(app, cors_allowed_origin="*")
 
+# borramos todas las imagenes subidas anteriormente
+for imagenesSubidas in os.listdir('static/uploads/'):
+    os.remove('static/uploads/' + imagenesSubidas)
+
 # variable donde se guardan los usuarios
 usuarios=list()
 

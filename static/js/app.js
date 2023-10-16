@@ -220,7 +220,6 @@ socket.on("chatConectado", function(dato){
         }
         // si es mensaje normal
         else{
-            console.log("es mensaje")
             mensaje.innerHTML +=   `<div class="mensaje friend_mensaje">
             <p><span>`+mensajeEnMemoria[2]+`</span><br>`+ mensajeEnMemoria[0] +`<br><span>`+mensajeEnMemoria[1][1]+`</span></p>
             </div>`
