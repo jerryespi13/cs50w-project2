@@ -165,7 +165,6 @@ def obtenerImagen(dato):
     image_binary = b64decode(imagen.split(',')[1])
     # creamos un nombre para la imagen
     nombre_imagen = room +  '_' + usuario + '_' + datetime.now().strftime("%d-%m-%Y%H-%M-%S")
-    print(nombre_imagen)
     # guardamos la imagen en la carpeta uploads
     try:
         with open('static/uploads/' + nombre_imagen +'.png', 'wb') as image_file:
@@ -178,3 +177,28 @@ def obtenerImagen(dato):
         chats[room][1]["mensajes"].pop(0)
     chats[room][1]["mensajes"].append(mensaje)
     emit("imagenRecibida", {"mensaje":imagen, "chat":room, "fecha":fecha, "usuario":usuario}, room=room, broadcast=True)
+
+# editar nombre usuario
+@socketio.on("cambiarNombreUsuario")
+def cambiarNombreUsuario(dato):
+    global usuarios
+    usuarioNuevo = dato["nuevoUsuario"]
+    usuarioAnterior = dato["anteriorUsuario"]
+    # validamos que el usuario no venga vacio
+    if usuarioNuevo.isspace() or len(usuarioNuevo) ==0:
+        mensaje = "Usuario invalido"
+        emit('mensaje', {"mensaje":mensaje})
+        return
+    # validamos que el usuario no exista
+    elif usuarioNuevo in usuarios:
+        mensaje = "Elija otro usuario"
+        emit('mensaje', {"mensaje":mensaje})
+        return
+    # actualizamos los mensajes asocidados al usuario
+    for chat in chats:
+        for mensaje in chats[chat][1]["mensajes"]:
+            if mensaje[2] == usuarioAnterior:
+                mensaje[2] = usuarioNuevo
+    # actulizamos el dato en la lista usuarios, apoyandonos de su indice
+    usuarios[usuarios.index(usuarioAnterior)] = usuarioNuevo
+    emit("usuarioEditado", {"usuario":usuarioNuevo})

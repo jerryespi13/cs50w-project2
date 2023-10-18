@@ -13,6 +13,9 @@ if(usuario === null){
   usuarioDefault.style.visibility = "visible"
   nombreUsuario.style.visibility = "hidden"
   
+  // usuario que se registró
+  usuarioDefault.innerHTML = usuario
+  
 // ajuste automatico de pantalla
 let checkChat = false
 window.addEventListener('resize', function() {
@@ -257,7 +260,9 @@ function leaveRoom(){
         document.querySelector("#ultimoMensaje"+sala).innerHTML =""
         document.querySelector("#fechaUltimoMensaje"+sala).innerHTML=""
     }
-    socket.emit('leave', { 'room': sala, "usuario":usuario })
+    if (sala){
+        socket.emit('leave', { 'room': sala, "usuario":usuario })
+    }
 
     // obtenemos el ancho de pantalla
     let width = window.innerWidth
@@ -389,12 +394,31 @@ function editarConfirmar(x){
     else{
         usuarioDefault.style.visibility = "visible"
         nombreUsuario.style.visibility = "hidden"
+        // si el nombre fue editado
+        if (nombreUsuario.value !== usuarioDefault.innerHTML){
+            // emitimos un evento para hacer la validacion y el cambio de nombre usuario
+            socket.emit("cambiarNombreUsuario",{"nuevoUsuario":nombreUsuario.value,"anteriorUsuario":usuario})
+        }
     }
     nombreUsuario.value = usuarioDefault.innerHTML
     nombreUsuario.focus()
     
 }
-document.querySelector("#nombreusuariodefault").innerHTML = usuario
+
+socket.on("usuarioEditado", function(dato){
+    // actulizamos el nombre en el input
+    usuarioDefault.innerHTML=dato["usuario"]
+    // actualizamos el localStorage
+    localStorage.usuario = dato["usuario"]
+    // actualizamos la variable usuario
+    usuario = localStorage.getItem("usuario")
+})
+
+// alertas para validacion de cambio de usuarios
+socket.on('mensaje', function(dato) {
+    mensaje = dato["mensaje"]
+    alert(mensaje)
+    });
 
 // enviar archivo
 function subirArchivo(){
