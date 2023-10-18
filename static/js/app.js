@@ -81,7 +81,7 @@ socket.on("room_list", function(dato){
         // variable para guardar el dato de fecha a mostrar
         // si el mensaje es de hoy se mostrará la hora, si no, se mostrará la fecha
         let fechaMostrar = ""
-        let ultimoChat = room[3] - 1;
+        let ultimoChat = room[1]["mensajes"].length - 1
         // obtenemos la fecha del ultimo chat
         let fechaUltimoChat = (ultimoChat === -1) ?  "" : room[1]["mensajes"][ultimoChat][1][0]
         // obtenemos la hora del ultimo chat

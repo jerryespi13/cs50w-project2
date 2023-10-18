@@ -126,8 +126,6 @@ def on_leave(data):
 def send_room_list(dato):
     rooms=list()
     for chat in chats:
-        #cantidad de chats en el chat
-        chats[chat][3]=len(chats[chat][1]["mensajes"])
         rooms.append(chats[chat])
     emit("room_list", {"rooms":rooms})
 
