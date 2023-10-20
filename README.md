@@ -32,20 +32,65 @@ Web Programming with Python and JavaScript
 - [x] **En README.md** , incluye una breve reseña describiendo tu proyecto.
 - [x] Si has agregado paquetes de Python que deban ser instalados para ejecutar tu aplicación web, asegúrate de agregarlos a requirements.txt.
 
-## Instalación entorno virtual
-### Crea la carpeta : 
->`py -3 -m venv .venv`   
-### Activa el entorno virtual:
-> `.venv\Scripts\activate`
-### Instala los requerimientos: 
-> `pip install -r .\requirements.txt`
-## Variables de entorno:
-### Asigna el valor a la variable de entorno FLASK_APP 
-Crea un archivo .env y dentro de el asigna:
->`FLASK_APP="application.py"`
-## Corre la aplicación web
->`flask run`
-## Jerarquia de direcctorio
+### Contenido de cada archivo
+#### style.css
+**Ruta: static/css/style.css**
+
+En este archivo se encarga del estilado de la página para darle una mejor apariencia visual al usuario al momento de usarla, ya que se usan conceptos tales como mediaquery que permiten el acoplamiento del contenido en dependencia del tamaño de pantalla del dispositivo desde dónde se esté usando la aplicación web.
+
+#### index.js
+**Ruta: static/js/index.css**
+
+Archivo JS que es llamado en la pagina index.html, a través de éste archivo se hacen validaciones como el ingreso de un usuario o que si ya el usuario esta logueado ser redirigido a la pagina donde se listan las salas.
+
+También con este archivo se mandan mensajes de error al iniciar session con detalle del error para que el usuario pueda saber como resolver el problema.
+
+#### app.js
+**Ruta: static/js/app.css**
+
+Archivo donde se maneja los eventos socket para el funcionamiento de la pagina, este arcchivo es utilizado en la página canales, la cual es dónde se muestras los chats disponibles.
+
+En este archivo manejamos eventos de:
+- cierre de sesión.
+- Unirse a un chat.
+- Abandonar un chat.
+- Enviar mensajes en un chat.
+- Enviar imagenes en un chat
+- Crear un nuevo chat.
+- Cambiar nombre de usuario.
+
+#### layout.html
+**Ruta: templates/layout.html**
+
+El archivo layout.hmtl es un archivo que sirve como plantilla base para los demás archivos html.
+
+#### index.html
+**Ruta: templates/index.html**
+
+Página principal en la cual el usuario tiene que registrarse para poder ingresar a la página de los chats
+
+#### canales.html
+**Ruta: templates/canales.html**
+
+Página dónde los usuarios pueden ver los canales creados y también pueden dar click en alguno para unirse para enviar y recibir mensajes e imagenes.
+
+Desde esta pagina, tambien pueden crear nuevos canales y cambiar su nombre de usuario.
+
+#### application.py
+**Ruta: /application.py**
+
+Archivo python en el cual se maneja la logica del backend.
+Desde aqui se maneja el guardado en memoria de cada nueva sala con sus respectivos mensajes y cada nuevo usuario que se registra en el servidor.
+
+Se estan utilizando los siguientes modulos (a parte de los obvios: FLASK y FLASKSOKETIO):
+- **os**: para el manejo de archivos del sistema.
+- **datetime**: para el manejo de información del tiempo, importante para mantener un registro de la hora en que se envia un mensaje.
+- **base64**: para la manipulación de información en base64, en este caso se usa para obtener la información de la imagen enviada desde el cliente al servidor
+- **dotenv**: para poder trabajar con el archivo que contine las variables de entorno.
+
+Para hacer uso de algunos de estos modulos no es necesario instalar nada mas, excepto por el modulo dotenv, pero despreoucupate que ya viene incluido en el archivo requirements.txt para que se instale junto con los demas paquete para el correcto funcionamiento de la aplicación web.
+
+### Jerarquia de direcctorio
 ```
 
 |—— static
@@ -70,60 +115,18 @@ Crea un archivo .env y dentro de el asigna:
 |—— application.py
 |—— requirements.txt
 ```
-## Contenido de cada archivo
-### style.css
-**Ruta: static/css/style.css**
 
-En este archivo se encarga del estilado de la página para darle una mejor apariencia visual al usuario al momento de usarla, ya que se usan conceptos tales como mediaquery que permiten el acoplamiento del contenido en dependencia del tamaño de pantalla del dispositivo desde dónde se esté usando la aplicación web.
 
-### index.js
-**Ruta: static/js/index.css**
-
-Archivo JS que es llamado en la pagina index.html, a través de éste archivo se hacen validaciones como el ingreso de un usuario o que si ya el usuario esta logueado ser redirigido a la pagina donde se listan las salas.
-
-También con este archivo se mandan mensajes de error al iniciar session con detalle del error para que el usuario pueda saber como resolver el problema.
-
-### app.js
-**Ruta: static/js/app.css**
-
-Archivo donde se maneja los eventos socket para el funcionamiento de la pagina, este arcchivo es utilizado en la página canales, la cual es dónde se muestras los chats disponibles.
-
-En este archivo manejamos eventos de:
-- cierre de sesión.
-- Unirse a un chat.
-- Abandonar un chat.
-- Enviar mensajes en un chat.
-- Enviar imagenes en un chat
-- Crear un nuevo chat.
-- Cambiar nombre de usuario.
-
-### layout.html
-**Ruta: templates/layout.html**
-
-El archivo layout.hmtl es un archivo que sirve como plantilla base para los demás archivos html.
-
-### index.html
-**Ruta: templates/index.html**
-
-Página principal en la cual el usuario tiene que registrarse para poder ingresar a la página de los chats
-
-### canales.html
-**Ruta: templates/canales.html**
-
-Página dónde los usuarios pueden ver los canales creados y también pueden dar click en alguno para unirse para enviar y recibir mensajes e imagenes.
-
-Desde esta pagina, tambien pueden crear nuevos canales y cambiar su nombre de usuario.
-
-### application.py
-**Ruta: /application.py**
-
-Archivo python en el cual se maneja la logica del backend.
-Desde aqui se maneja el guardado en memoria de cada nueva sala con sus respectivos mensajes y cada nuevo usuario que se registra en el servidor.
-
-Se estan utilizando los siguientes modulos (a parte de los obvios: FLASK y FLASKSOKETIO):
-- **os**: para el manejo de archivos del sistema.
-- **datetime**: para el manejo de información del tiempo, importante para mantener un registro de la hora en que se envia un mensaje.
-- **base64**: para la manipulación de información en base64, en este caso se usa para obtener la información de la imagen enviada desde el cliente al servidor
-- **dotenv**: para poder trabajar con el archivo que contine las variables de entorno.
-
-Para hacer uso de algunos de estos modulos no es necesario instalar nada mas, excepto por el modulo dotenv, pero despreoucupate que ya viene incluido en el archivo requirements.txt para que se instale junto con los demas paquete para el correcto funcionamiento de la aplicación web.
+## Instalación entorno virtual
+### Crea la carpeta : 
+>`py -3 -m venv .venv`   
+### Activa el entorno virtual:
+> `.venv\Scripts\activate`
+### Instala los requerimientos: 
+> `pip install -r .\requirements.txt`
+## Variables de entorno:
+### Asigna el valor a la variable de entorno FLASK_APP 
+Crea un archivo .env y dentro de el asigna:
+>`FLASK_APP="application.py"`
+## Corre la aplicación web
+>`flask run`
