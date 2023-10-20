@@ -40,3 +40,28 @@ Crea un archivo .env y dentro de el asigna:
 >`FLASK_APP="application.py"`
 ## Corre la aplicación web
 >`flask run`
+## Jerarquia de direcctorio
+```
+
+|—— static
+|    |—— css
+|        |—— style.css
+|    |—— fonts
+|        |—— OpenSans-Italic-VariableFont_wdth,wght.ttf
+|        |—— OpenSans-VariableFont_wdth,wght.ttf
+|    |—— img
+|        |—— balloon-chat.ico
+|        |—— pattern.png
+|        |—— profile.png
+|        |—— user.png
+|    |—— js
+|        |—— app.js
+|        |—— index.js
+|    |—— uploads
+|—— templates
+|    |—— canales.html
+|    |—— index.html
+|    |—— layout.html
+|—— application.py
+|—— requirements.txt
+```
