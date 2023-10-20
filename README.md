@@ -5,15 +5,20 @@ Web Programming with Python and JavaScript
 ## Información del proyecto
 - Titulo:  `Flack`
 - Autor:  `Jerry Ronaldo Espino Inestroza`
-- Descripción: Proyecto 2 de programación web. se trata de un servicio de mensajeria en linea utlizando Flask, dónde los usuarios serán capaces de registrarse con un nombre para crear canales para comunicarse, así cómo ver y unirse a canales existentes.
+- Descripción: Proyecto 2 de programación web. se trata de un servicio de mensajeria en linea utlizando Flask y SocketIO, dónde los usuarios serán capaces de registrarse con un nombre y luego crear canales para comunicarse, así cómo ver y unirse a canales existentes.
+
+&nbsp;&nbsp;&nbsp; En estos canales los usuarios serán capaces de enviar y recibir mensajes de texto e imagenes usando el protocolo de comunicación WebSoket.
+
+&nbsp;&nbsp;&nbsp; También los usuarios podrán ser capaces de cambiar su nombre de usuario, siempre y cuándo e nuevo nombre de usuario no cree algún conflicto con otro.    
+
 <!--- Video: [video]()-->
 
 ## 🛠 Skills
 - HTML
 - CSS
 - Flask
-- Socketio
-- Javascript
+- SocketIO
+- JavaScript
 
 ## Detalles del proyecto
 ### Requerimientos solicitados
