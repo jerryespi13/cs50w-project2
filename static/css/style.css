@@ -91,6 +91,9 @@ body{
     font-size: 1.5em;
     margin-left: 22px;
 }
+.nav_icons li label:hover{
+    cursor: pointer;
+}
 
 .search_chat{
     position: relative;

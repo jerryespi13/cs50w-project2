@@ -182,6 +182,7 @@ def cambiarNombreUsuario(dato):
     global usuarios
     usuarioNuevo = dato["nuevoUsuario"]
     usuarioAnterior = dato["anteriorUsuario"]
+    fecha = datetime.now().strftime("%d-%m-%Y %H:%M").split(" ")
     # validamos que el usuario no venga vacio
     if usuarioNuevo.isspace() or len(usuarioNuevo) ==0:
         mensaje = "Usuario invalido"
@@ -198,5 +199,10 @@ def cambiarNombreUsuario(dato):
             if mensaje[2] == usuarioAnterior:
                 mensaje[2] = usuarioNuevo
     # actulizamos el dato en la lista usuarios, apoyandonos de su indice
+    mensaje = "El usuario: "+ usuarioAnterior + " ha cambiado a: " + usuarioNuevo
     usuarios[usuarios.index(usuarioAnterior)] = usuarioNuevo
-    emit("usuarioEditado", {"usuario":usuarioNuevo})
+    emit("usuarioEditado", {"usuario":usuarioNuevo, "fecha":fecha, "mensaje":mensaje})
+
+@socketio.on("notificarCambiousuario")
+def cambioDeUsuario(dato):
+    emit("usarioCambio", {'mensaje': dato["mensaje"], "fecha":dato["fecha"]}, to=dato["sala"])

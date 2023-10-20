@@ -412,6 +412,25 @@ socket.on("usuarioEditado", function(dato){
     localStorage.usuario = dato["usuario"]
     // actualizamos la variable usuario
     usuario = localStorage.getItem("usuario")
+    // si el usuario esta en un chat avisamos al chat que el usuario ha cambiado de nombre
+    if (localStorage.getItem("chatActivo")){
+        socket.emit("notificarCambiousuario",{"mensaje":dato["mensaje"],"fecha":dato["fecha"], "sala":localStorage.getItem("chatActivo")})
+    }
+})
+
+socket.on("usarioCambio", function(dato){
+    var mensaje = document.querySelector("#chats"+localStorage.getItem("chatActivo"));
+    // añadimos el mensaje de bienvenida
+    mensaje.innerHTML +=    `<div class="log">
+                                <p>`+ dato["mensaje"] +`<br><span>`+dato["fecha"][1]+`</span></p>
+                            </div>`
+    mensaje.style.display = "block"
+
+    // autoscroll al ultimo mensaje enviado
+    mensaje.lastChild.scrollIntoView(false)
+
+    // recargar pagina (Prohibido en esta project)
+    //location.reload()
 })
 
 // alertas para validacion de cambio de usuarios

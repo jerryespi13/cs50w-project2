@@ -12,18 +12,18 @@ Chatea
                     <img src="/static/img/user.png" alt="" class="cover">
                 </div>
                 <ul class="nav_icons">
-                    <li><i class="fa-solid fa-message"></i></li>
-                    <li><i class="fa-regular fa-circle-stop"></i></li>
-                    <li>
+                    <li><label for="chats" title="Lista de Salas"><i class="fa-solid fa-message"></i></label></li>
+                    <li><label title="Estados (de momento no disponible)"><i class="fa-regular fa-circle-stop"></i></label></li>
+                    <li><label>
                         <i class="fa-solid fa-ellipsis-vertical" id="dropdown">
                             <div class="dropdown-content">
                                 <label for="chats">Salas</label>
                                 <label for="nuevoChat">Nueva Sala</label>
                                 <label for="configuracion">Configuración</label>
-                                <label  onclick="cerrarSesion()">Cerrar Sesión</label>
+                                <label onclick="cerrarSesion()">Cerrar Sesión</label>
                             </div>
                         </i>
-                    </li>
+                    </label></li>
                 </ul>
             </div>
             <!-- search  -->
@@ -55,7 +55,7 @@ Chatea
                     <img src="/static/img/user.png" alt="" class="cover">
                 </div>
                 <div class="infoPerfil">
-                    <label>Tu Usuario</label>
+                    <label for="nombreusuario">Tu Usuario</label>
                     <div class="infonombre">
                         <span id="nombreusuariodefault" class="nombreusuariodefault"></span>
                         <input type="text" name="nombreusuario" id="nombreusuario" class="nombreusuario">
