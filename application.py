@@ -198,11 +198,16 @@ def cambiarNombreUsuario(dato):
         mensaje = "Elija otro usuario"
         emit('mensaje', {"mensaje":mensaje})
         return
-    # actualizamos los mensajes asocidados al usuario
+    # actualizamos datos
     for chat in chats:
+        # actualizamos los mensajes asocidados al usuario
         for mensaje in chats[chat][1]["mensajes"]:
             if mensaje[2] == usuarioAnterior:
                 mensaje[2] = usuarioNuevo
+        # actulizamos el nombre en la sala
+        for usuario in chats[chat][2]["usuarios"]:
+            if (usuario == usuarioAnterior):
+                chats[chat][2]["usuarios"][chats[chat][2]["usuarios"].index(usuarioAnterior) ] = usuarioNuevo
     # actulizamos el usuario
     usuarios[usuarioAnterior][0]["nombre"] = usuarioNuevo
     # cambiamos la clave en el diccionario
