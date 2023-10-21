@@ -541,9 +541,6 @@ function cambiarFoto(){
     // al darle click al icono, hacemos click con JS al input
     imagePerfil.click()
 
-    // validamos si tiene el listener y hacemos que solo se agregue una vez
-   
-
     imagePerfil.addEventListener("change", (e) =>{
         // obtenemos el archivo
         let file = imagePerfil.files[0]

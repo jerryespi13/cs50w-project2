@@ -58,6 +58,7 @@ En este archivo manejamos eventos de:
 - Enviar imagenes en un chat
 - Crear un nuevo chat.
 - Cambiar nombre de usuario.
+- Cambiar foto de perfil
 
 #### layout.html
 **Ruta: templates/layout.html**
@@ -130,3 +131,254 @@ Crea un archivo .env y dentro de el asigna:
 >`FLASK_APP="application.py"`
 ## Corre la aplicación web
 >`flask run`
+
+## Toque personal
+### Envio de imagenes
+
+Este proyecto tiene la capacidad de poder enviar imagenes dentro del chat, para esto se hace uso de JavaScript el cual emite un evento al que es recibido por el backend donde se procesa la información. Esto se encuentra en el archivo app.js linea 455 y el archivo application.py linea
+
+FRONTEND:
+```
+function subirArchivo(){
+    let imageInput = document.querySelector("#attach")
+    imageInput.click()
+
+    if (imageInput.dataset.listener !== 'true'){
+
+    imageInput.addEventListener("change", (e) =>{
+        let file = imageInput.files[0]
+
+        if (!file.type.startsWith('image/')) {
+            alert('Por favor, selecciona una imagen.');
+            e.target.value = '';
+            return
+        }
+        // creamos un lector
+        let reader = new FileReader()
+        reader.addEventListener("load",()=>{
+            let room = localStorage.getItem("chatActivo")
+            let user = localStorage.getItem("usuario")
+            socket.emit("imagen", {"room":room, "usuario":user, "imagen":reader.result})
+        })
+        reader.readAsDataURL(file)
+    })
+    
+    imageInput.dataset.listener = 'true'
+}
+}
+
+socket.on("imagenRecibida",function(dato){
+    let mensaje = document.querySelector("#chats"+dato["chat"])
+
+    const ultimoMensaje = document.querySelector("#ultimoMensaje"+dato["chat"])
+    const fechaUltimoMensaje = document.querySelector("#fechaUltimoMensaje"+dato["chat"])
+    fechaUltimoMensaje.innerHTML = dato["fecha"][1]
+
+    if(dato["usuario"]===localStorage.getItem("usuario")){
+        mensaje.innerHTML +=    `<div class="mensaje my_mensaje">
+                                    <p><span>`+dato["fecha"][1]+`</span>
+                                    <img src="`+dato["mensaje"]+`" alt="" style="width: 100%; border-radius: 5px;">
+                                    </p>
+                                </div>`
+    }
+    else{
+        mensaje.innerHTML +=    `<div class="mensaje friend_mensaje">
+                                    <p><span>`+dato["usuario"]+`</span><span>`+dato["fecha"][1]+`</span>
+                                    <img src="`+dato["mensaje"]+`" alt="" style="width: 100%; border-radius: 5px;">
+                                    </p>
+                                </div>`
+    }
+    
+    mensaje.lastChild.scrollIntoView(true, { behavior: "smooth"})
+})
+```
+BACKEND:
+```
+@socketio.on("imagen")
+def obtenerImagen(dato):
+    fecha = datetime.now().strftime("%d-%m-%Y %H:%M").split(" ")
+    room = dato["room"]
+    usuario = dato["usuario"]
+    imagen = dato["imagen"]
+    image_binary = b64decode(imagen.split(',')[1])
+    nombre_imagen = room +  '_' + usuario + '_' + datetime.now().strftime("%d-%m-%Y%H-%M-%S")
+    try:
+        with open('static/uploads/' + nombre_imagen +'.png', 'wb') as image_file:
+            image_file.write(image_binary)
+    except Exception as e:
+        print(f"Error al guardar la imagen: {str(e)}")
+    mensaje = [nombre_imagen,fecha,usuario]
+    if len(chats[room][1]["mensajes"]) > 99:
+        chats[room][1]["mensajes"].pop(0)
+    chats[room][1]["mensajes"].append(mensaje)
+    emit("imagenRecibida", {"mensaje":imagen, "chat":room, "fecha":fecha, "usuario":usuario}, room=room, broadcast=True)
+
+```
+### Cambiar foto de perfil
+
+Este proyecto tambien cuenta con la capacidad de poder poner y cambiar la foto del perfil, se logra siguiendo un poco la logica del envio de imagenes, ya que primero tenemos que emitir el evento desde el FRONTEND y procesarlo en el BACKEND.
+Esto se encuentra en el archivo app.js linea 524 en adelante y en el archivo application.py linea 235 en adelante
+
+FRONTEND:
+```
+window.onload = function() {
+    var contenedor = document.querySelector('.configuracion');
+    var texto = document.querySelector('.texto');
+  
+    contenedor.addEventListener('mouseover', function() {
+      texto.style.opacity = '1';
+    });
+  
+    contenedor.addEventListener('mouseout', function() {
+      texto.style.opacity = '0';
+    });
+  };
+
+function cambiarFoto(){
+    const imagePerfil = document.querySelector("#fotoPerfil")
+    imagePerfil.click()
+
+    imagePerfil.addEventListener("change", (e) =>{
+        let file = imagePerfil.files[0]
+
+        if (!file.type.startsWith('image/')) {
+            alert('Por favor, selecciona una imagen.');
+            e.target.value = '';
+            return
+        }
+        let reader = new FileReader()
+        reader.addEventListener("load",()=>{
+            let user = localStorage.getItem("usuario")
+            socket.emit("fotoPerfil", {"usuario":user, "imagen":reader.result})
+        })
+        reader.readAsDataURL(file)
+    })
+    
+    imagePerfil.removeEventListener
+}
+
+socket.on("fotoCambiada", function(dato){
+    const imagenPerfil = document.querySelector("#fotoUsuario")
+    const imagenPerfilConfiguracion = document.querySelector("#fotoUsuarioConfiguracion")
+    
+    imagenPerfil.setAttribute('src', dato["imagen"])
+    imagenPerfilConfiguracion.setAttribute('src', dato["imagen"])
+})
+
+```
+
+BACKEND:
+```
+@socketio.on("fotoPerfil")
+def cambiarFoto(dato):
+    usuario = dato["usuario"]
+    imagen = dato["imagen"]
+    image_binary = b64decode(imagen.split(',')[1])
+    nombre_imagen = usuario + '_FotoPerfil'
+    if(usuarios[usuario][1]["foto"]=='static/uploads/' + nombre_imagen + ".png"):
+        os.remove('static/uploads/' + nombre_imagen + ".png")
+    try:
+        with open('static/uploads/' + nombre_imagen +'.png', 'wb') as image_file:
+            image_file.write(image_binary)
+    except Exception as e:
+        print(f"Error al guardar la imagen: {str(e)}")
+    
+    usuarios[usuario][1]["foto"] = "static/uploads/"+nombre_imagen+".png"
+   
+    emit("fotoCambiada", {"imagen":usuarios[usuario][1]["foto"]})
+
+```
+
+Como al enviar imagenes y al subir imagenes, estas mismas se estan guardando en el servidor, se nos presenta un problema, que cada vez se va llenando la memoria, para corregir esto lo que estoy haciendo es borrar todas las imagenes al comenzar la operacion de servicio del servidor. 
+
+Esto lo pueden ver el archivo applicatio.py linea 23 y 24
+
+```
+for imagenesSubidas in os.listdir('static/uploads/'):
+    os.remove('static/uploads/' + imagenesSubidas)
+```
+
+### Cambiar nombre de usuario
+
+Este proyecto tambien cuenta con la capacidad de poder cambiar el nombre de usuario, se logra siguiendo un poco la logica anterior, ya que primero tenemos que emitir el evento desde el FRONTEND y procesarlo en el BACKEND.
+Esto se puede encontrar en el archivo app.js de la linea 397  a la 446 y en application.py de la linea 185 a la 226.
+
+FRONTEND:
+```
+// funcion para editar el nombre de usuario
+function editarConfirmar(x){
+    x.classList.toggle("fa-check");
+
+    if(usuarioDefault.style.visibility === "visible"){
+        usuarioDefault.style.visibility = "hidden"
+        nombreUsuario.style.visibility = "visible"
+    }
+    else{
+        usuarioDefault.style.visibility = "visible"
+        nombreUsuario.style.visibility = "hidden"
+        if (nombreUsuario.value !== usuarioDefault.innerHTML){
+            socket.emit("cambiarNombreUsuario",{"nuevoUsuario":nombreUsuario.value,"anteriorUsuario":usuario})
+        }
+    }
+    nombreUsuario.value = usuarioDefault.innerHTML
+    nombreUsuario.focus()
+    
+}
+
+socket.on("usuarioEditado", function(dato){
+    usuarioDefault.innerHTML=dato["usuario"]
+    localStorage.usuario = dato["usuario"]
+    usuario = localStorage.getItem("usuario")
+    if (localStorage.getItem("chatActivo")){
+        socket.emit("notificarCambiousuario",{"mensaje":dato["mensaje"],"fecha":dato["fecha"], "sala":localStorage.getItem("chatActivo")})
+    }
+})
+
+socket.on("usarioCambio", function(dato){
+    var mensaje = document.querySelector("#chats"+localStorage.getItem("chatActivo"));
+    // añadimos el mensaje de bienvenida
+    mensaje.innerHTML +=    `<div class="log">
+                                <p>`+ dato["mensaje"] +`<br><span>`+dato["fecha"][1]+`</span></p>
+                            </div>`
+    mensaje.style.display = "block"
+
+    mensaje.lastChild.scrollIntoView(false)
+})
+
+```
+BACKEND:
+```
+@socketio.on("cambiarNombreUsuario")
+def cambiarNombreUsuario(dato):
+    global usuarios
+    usuarioNuevo = dato["nuevoUsuario"]
+    usuarioAnterior = dato["anteriorUsuario"]
+    fecha = datetime.now().strftime("%d-%m-%Y %H:%M").split(" ")
+    if usuarioNuevo.isspace() or len(usuarioNuevo) ==0:
+        mensaje = "Usuario invalido"
+        emit('mensaje', {"mensaje":mensaje})
+        return
+    elif usuarioNuevo in usuarios:
+        mensaje = "Elija otro usuario"
+        emit('mensaje', {"mensaje":mensaje})
+        return
+    for chat in chats:
+        for mensaje in chats[chat][1]["mensajes"]:
+            if mensaje[2] == usuarioAnterior:
+                mensaje[2] = usuarioNuevo
+        for usuario in chats[chat][2]["usuarios"]:
+            if (usuario == usuarioAnterior):
+                chats[chat][2]["usuarios"][chats[chat][2]["usuarios"].index(usuarioAnterior) ] = usuarioNuevo
+    usuarios[usuarioAnterior][0]["nombre"] = usuarioNuevo
+    valor = usuarios[usuarioAnterior]
+    del usuarios[usuarioAnterior]
+    usuarios[usuarioNuevo] = valor
+    mensaje = "El usuario: "+ usuarioAnterior + " ha cambiado a: " + usuarioNuevo
+    emit("usuarioEditado", {"usuario":usuarioNuevo, "fecha":fecha, "mensaje":mensaje})
+
+@socketio.on("notificarCambiousuario")
+def cambioDeUsuario(dato):
+    emit("usarioCambio", {'mensaje': dato["mensaje"], "fecha":dato["fecha"]}, to=dato["sala"])
+
+```
+Como se puede observar cuando un usuario cambia su nombre y esta dentro de una sala, este cambio es notificado en esa sala.
