@@ -140,7 +140,7 @@ def cerrarSesion(dato):
     global usuarios
     # borramos el usuario en cuestion
     emit("sesionCerrada",{"mensaje":"sesion cerrada"})
-    usuarios.remove(dato["usuario"])
+    del usuarios[dato["usuario"]]
 
 # envio de mensajes
 @socketio.on("mensaje")
