@@ -24,7 +24,7 @@ for imagenesSubidas in os.listdir('static/uploads/'):
     os.remove('static/uploads/' + imagenesSubidas)
 
 # variable donde se guardan los usuarios
-usuarios=list()
+usuarios=dict()
 
 # variable donde se guardan las salas
 chats = dict()
@@ -71,7 +71,12 @@ def conectarUsuario(dato):
         return
     
     # si pasa la validacion agregamos ese usuario a lista de usuarios
-    usuarios.append(usuario)
+    fecha = datetime.now().strftime("%d-%m-%Y %H:%M").split(" ")
+    usuarios[usuario] = [
+                        {"nombre": usuario},
+                        {"foto": "/static/img/user.png"},
+                        {"fechaCreacion": fecha}
+                        ]
     emit("usuarioConectado", {"usuario": usuario})
 
 # crear nueva sala
@@ -198,11 +203,50 @@ def cambiarNombreUsuario(dato):
         for mensaje in chats[chat][1]["mensajes"]:
             if mensaje[2] == usuarioAnterior:
                 mensaje[2] = usuarioNuevo
-    # actulizamos el dato en la lista usuarios, apoyandonos de su indice
+    # actulizamos el usuario
+    usuarios[usuarioAnterior][0]["nombre"] = usuarioNuevo
+    # cambiamos la clave en el diccionario
+    # para eso primero obtenemos los datos ya actualizados de la key vieja
+    valor = usuarios[usuarioAnterior]
+    # eliminamos la key vieja
+    del usuarios[usuarioAnterior]
+    # creamos una key nueva con los valores ya editados
+    usuarios[usuarioNuevo] = valor
+    # mensaje de cambio de usuario para la sala
     mensaje = "El usuario: "+ usuarioAnterior + " ha cambiado a: " + usuarioNuevo
-    usuarios[usuarios.index(usuarioAnterior)] = usuarioNuevo
     emit("usuarioEditado", {"usuario":usuarioNuevo, "fecha":fecha, "mensaje":mensaje})
 
 @socketio.on("notificarCambiousuario")
 def cambioDeUsuario(dato):
     emit("usarioCambio", {'mensaje': dato["mensaje"], "fecha":dato["fecha"]}, to=dato["sala"])
+
+@socketio.on("fotoUsuario")
+def fotoUsuario(dato):
+    usuario = dato["usuario"]
+    imagen =usuarios[usuario][1]["foto"]
+    emit("imagenUsuario", {"imagen":imagen})
+
+# Cambio de foto de perfil
+@socketio.on("fotoPerfil")
+def cambiarFoto(dato):
+    usuario = dato["usuario"]
+    # obtenemos la imagen
+    imagen = dato["imagen"]
+    # obtenemos el binario de la imagen
+    image_binary = b64decode(imagen.split(',')[1])
+    # creamos un nombre para la imagen
+    nombre_imagen = usuario + '_FotoPerfil'
+    # si existe una imagen en la carpeta uplodas la borramos
+    if(usuarios[usuario][1]["foto"]=='static/uploads/' + nombre_imagen + ".png"):
+        os.remove('static/uploads/' + nombre_imagen + ".png")
+    # guardamos la imagen en la carpeta uploads
+    try:
+        with open('static/uploads/' + nombre_imagen +'.png', 'wb') as image_file:
+            image_file.write(image_binary)
+    except Exception as e:
+        print(f"Error al guardar la imagen: {str(e)}")
+    
+    # actulizar imagen en memoria
+    usuarios[usuario][1]["foto"] = "static/uploads/"+nombre_imagen+".png"
+   
+    emit("fotoCambiada", {"imagen":usuarios[usuario][1]["foto"]})

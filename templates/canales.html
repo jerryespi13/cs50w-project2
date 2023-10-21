@@ -9,7 +9,9 @@ Chatea
             <!-- header -->
             <div class="header">
                 <div class="userimg">
-                    <img src="/static/img/user.png" alt="" class="cover">
+                    <label for="configuracion">
+                    <img id="fotoUsuario" alt="" class="cover">
+                    </label>
                 </div>
                 <ul class="nav_icons">
                     <li><label for="chats" title="Lista de Salas"><i class="fa-solid fa-message"></i></label></li>
@@ -52,7 +54,9 @@ Chatea
             <input type="radio" name="radio" id="configuracion">
             <div class="configuracion">
                 <div class="userimg">
-                    <img src="/static/img/user.png" alt="" class="cover">
+                    <img  id="fotoUsuarioConfiguracion" alt="" class="cover">
+                    <div class="texto" onclick="cambiarFoto()">Cambiar foto de perfil</div>
+                    <input type="file" name="fotoPerfil" id="fotoPerfil" accept=".jpg, .png, .jpeg">
                 </div>
                 <div class="infoPerfil">
                     <label for="nombreusuario">Tu Usuario</label>

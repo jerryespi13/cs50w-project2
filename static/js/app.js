@@ -6,7 +6,6 @@ if(usuario === null){
     window.location.href="/"
   }
 
-  
   //agragamos algunos estilos a ciertos elementos en el DOM
   usuarioDefault = document.querySelector("#nombreusuariodefault")
   nombreUsuario = document.querySelector("#nombreusuario")
@@ -47,6 +46,16 @@ window.addEventListener('resize', function() {
   });
 
 const socket = io();
+
+socket.emit("fotoUsuario",{"usuario":usuario})
+
+socket.on("imagenUsuario", function(dato){
+    const imagenPerfil = document.querySelector("#fotoUsuario")
+    const imagenPerfilConfiguracion = document.querySelector("#fotoUsuarioConfiguracion")
+    
+    imagenPerfil.setAttribute('src', dato["imagen"])
+    imagenPerfilConfiguracion.setAttribute('src', dato["imagen"])
+})
 
 // Recordando sala del usuario
 // si existe una sala en el localstorage, se une directamente a esa sala al cargar la pagina
@@ -505,4 +514,61 @@ socket.on("imagenRecibida",function(dato){
     
     // autoscroll al ultimo mensaje enviado
     mensaje.lastChild.scrollIntoView(true, { behavior: "smooth"})
+})
+
+// Cambiar Foto de perfil
+// mostramos el texto cuando se pase el mouse por encima de la foto
+window.onload = function() {
+    var contenedor = document.querySelector('.configuracion');
+    var texto = document.querySelector('.texto');
+  
+    contenedor.addEventListener('mouseover', function() {
+      texto.style.opacity = '1';
+    });
+  
+    contenedor.addEventListener('mouseout', function() {
+      texto.style.opacity = '0';
+    });
+  };
+
+function cambiarFoto(){
+    // input donde se suben las imagenes
+    const imagePerfil = document.querySelector("#fotoPerfil")
+    // no se le da click directamente al input si no a un icono
+    // al darle click al icono, hacemos click con JS al input
+    imagePerfil.click()
+
+    // validamos si tiene el listener y hacemos que solo se agregue una vez
+   
+
+    imagePerfil.addEventListener("change", (e) =>{
+        // obtenemos el archivo
+        let file = imagePerfil.files[0]
+
+        // validamos que sea una imgen, tambien en el html
+        if (!file.type.startsWith('image/')) {
+            alert('Por favor, selecciona una imagen.');
+            e.target.value = '';
+            return
+        }
+        // creamos un lector
+        let reader = new FileReader()
+        reader.addEventListener("load",()=>{
+            // obtenemos el usuario
+            let user = localStorage.getItem("usuario")
+            // emitimos el evento con el usuario, la sala y el dato base64 de la imagen
+            socket.emit("fotoPerfil", {"usuario":user, "imagen":reader.result})
+        })
+        reader.readAsDataURL(file)
+    })
+    
+    imagePerfil.removeEventListener
+}
+
+socket.on("fotoCambiada", function(dato){
+    const imagenPerfil = document.querySelector("#fotoUsuario")
+    const imagenPerfilConfiguracion = document.querySelector("#fotoUsuarioConfiguracion")
+    
+    imagenPerfil.setAttribute('src', dato["imagen"])
+    imagenPerfilConfiguracion.setAttribute('src', dato["imagen"])
 })
