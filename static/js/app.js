@@ -304,7 +304,10 @@ function sendMenssage(){
     let sala = localStorage.getItem("chatActivo")
     let mensaje = document.querySelector("#mensaje").value
     let usuario = localStorage.getItem("usuario")
-    socket.emit("mensaje",{"sala":sala, "mensaje":mensaje, "usuario":usuario})
+    // no enviar mensajes vacios
+    if (mensaje !== ""){
+        socket.emit("mensaje",{"sala":sala, "mensaje":mensaje, "usuario":usuario})
+    }
     //limpiamos el input
     document.querySelector("#mensaje").value = ""
     // posicionamos el cursor en el input
